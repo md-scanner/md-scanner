@@ -8,6 +8,8 @@ import time
 import math
 import random
 import json
+from urllib.parse import urlparse
+
 
 load_dotenv()
 
@@ -44,7 +46,7 @@ class DatasetRetriever:
 
     def try_to_create_directory(self):
         try:
-            os.mkdir(self.out_dir)
+            os.mkdir(self.output_directory)
         except:
             pass
 
@@ -57,13 +59,11 @@ class DatasetRetriever:
         self.current_page_offset = 0
 
 
-    def assert_md_file_content(self, md_file_content):
-        content_utf8 = md_file_content.decode('utf-8')
-
+    def assert_md_file_content(self, md_file_content: str):
         # Throws an exception if the given MD file contains a non-ASCII character. Supposing the MD file 
         # is UTF-8 encoded, a non-ASCII character will be a character whose UTF-8 binary representation
         # has more than one byte
-        for char in content_utf8:
+        for char in md_file_content:
             if len(char.encode('utf-8')) > 1:
                 raise InvalidMdFile(f"Non-ASCII character found: {char}")
         
@@ -71,13 +71,33 @@ class DatasetRetriever:
         # in Github's Markdown files
         # NOTE: At the moment we ignore whether the tag is found inside an HTML code section. Instead,
         # we should accept MD files whose HTML tags are found inside a ``` ... ``` section
-        match = re.search(r"<([^\s]+)(?:\s[^>]*)?>(?:.|\n)*?<\/\1>", content_utf8)
+        match = re.search(r"<([^\s]+)(?:\s[^>]*)?>(?:.|\n)*?<\/\1>", md_file_content)
         if match != None:
             raise InvalidMdFile(f"HTML tags found: {match.group(0)}")
 
 
-    def download_and_store_md_file(self, md_file):
-        filename = hex(hash(md_file.decoded_content))[2:]
+    def make_image_urls_absolute(self, md_file, md_file_content: str):
+        image_url_regex = re.compile(r"!\[[^\]]*\]\(([^)]+)\)")
+
+        offset = 0
+        for match in image_url_regex.finditer(md_file_content):
+            image_url = match.group(1)
+            match_start, match_end = match.span(1)
+
+            if image_url.startswith("http://") or image_url.startswith("https://"):
+                continue
+
+            parsed_url = urlparse(md_file.download_url)
+            abs_image_url = parsed_url._replace(path=os.path.dirname(parsed_url.path) + "/" + image_url).geturl()
+
+            md_file_content = md_file_content[:match_start + offset] + abs_image_url + md_file_content[match_end + offset:]
+            offset += len(abs_image_url) - len(image_url)
+
+        return md_file_content
+
+
+    def save_md_file(self, md_file, processed_content):
+        filename = hex(hash(processed_content))[2:]
 
         desc_path = os.path.join(self.output_directory, filename + ".json")
         md_path = os.path.join(self.output_directory, filename + ".md")
@@ -94,7 +114,7 @@ class DatasetRetriever:
 
         # Store the MD file
         with open(md_path, "wb") as f:
-            f.write(md_file.decoded_content)
+            f.write(processed_content.encode('utf-8'))
 
 
     def retrieve_one(self):
@@ -116,14 +136,15 @@ class DatasetRetriever:
             # This is done to avoid forks of the same repository
             if file_key in self.processed_file_keys:
                 raise InvalidMdFile(f"Already processed")
-
             self.processed_file_keys.add(file_key)
 
-            # Check on the file's content
-            self.assert_md_file_content(md_file.decoded_content)
+            processed_content = md_file.decoded_content.decode('utf-8')
 
-            # Download and store the file in the output directory
-            self.download_and_store_md_file(md_file)
+            processed_content = self.make_image_urls_absolute(md_file, processed_content)
+
+            self.assert_md_file_content(processed_content)
+
+            self.save_md_file(md_file, processed_content)
 
             print(f" {Fore.GREEN}Saved!{Fore.RESET}")
 
@@ -131,7 +152,7 @@ class DatasetRetriever:
             return True
 
         except InvalidMdFile as e:
-            print(f" {Fore.RED}Invalid content: {e}{Fore.RESET}")
+            print(f" {Fore.RED}Invalid MD-file: {e}{Fore.RESET}")
             return False
 
 
