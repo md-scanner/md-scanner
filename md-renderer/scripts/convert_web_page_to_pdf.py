@@ -1,21 +1,19 @@
+# https://github.com/kumaF/pyhtml2pdf/blob/master/pyhtml2pdf/converter.py
+
 import json
 import base64
 from time import time
+import sys
 
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
-from selenium.common.exceptions import TimeoutException
-from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.chrome.service import Service as ChromeService
 from selenium.webdriver.support.expected_conditions import staleness_of
 from webdriver_manager.chrome import ChromeDriverManager
-from selenium.webdriver.common.by import By
-
 
 def convert(
     source: str,
     target: str,
-    timeout: int = 2,
-    install_driver: bool = True,
     print_options: dict = {},
 ):
     """
@@ -23,14 +21,13 @@ def convert(
 
     :param str source: source html file or website link
     :param str target: target location to save the PDF
-    :param int timeout: timeout in seconds. Default value is set to 2 seconds
     :param bool compress: whether PDF is compressed or not. Default value is False
     :param int power: power of the compression. Default value is 0. This can be 0: default, 1: prepress, 2: printer, 3: ebook, 4: screen
     :param dict print_options: options for the printing of the PDF. This can be any of the params in here:https://vanilla.aslushnikov.com/?Page.printToPDF
     """
 
     result = __get_pdf_from_html(
-        source, timeout, install_driver, print_options)
+        source, print_options)
     
     with open(target, "wb") as file:
         file.write(result)
@@ -49,11 +46,9 @@ def __send_devtools(driver, cmd, params={}):
 
 
 def __get_pdf_from_html(
-    path: str, timeout: int, install_driver: bool, print_options: dict
+    path: str, print_options: dict
 ):
     # Setup the headless Browser
-    started_at = time()
-
     webdriver_options = Options()
     webdriver_prefs = {}
     driver = None
@@ -66,23 +61,13 @@ def __get_pdf_from_html(
 
     webdriver_prefs["profile.default_content_settings"] = {"images": 2}
 
-    if install_driver:
-        driver = webdriver.Chrome(
-            ChromeDriverManager().install(), options=webdriver_options
-        )
-    else:
-        driver = webdriver.Chrome(options=webdriver_options)
-
-    print(f"Browser initialized in: {time() - started_at:.3f}s")
+    driver = webdriver.Chrome(
+        service=ChromeService(ChromeDriverManager().install()),
+        options=webdriver_options
+    )
 
     # Get the given website
-    started_at = time()
-
     driver.get(path)
-
-    print(f"Page ready in: {time() - started_at:.3f}s")
-
-    started_at = time()
 
     calculated_print_options = {
         "landscape": False,
@@ -97,10 +82,14 @@ def __get_pdf_from_html(
     driver.quit()
     pdf_data = base64.b64decode(result["data"])
 
-    print(f"PDF generated in: {time() - started_at:.3f}s")
-
     return pdf_data
 
+if __name__ == "__main__":
+    # <web-page-url> <pdf-file>
+    if len(sys.argv) < 3:
+        print(f"Invalid syntax: {sys.argv[0]} <web-page-url> <pdf-file>")
+        exit(1)
 
-convert('http://localhost:4000/', 'sample.pdf', 2, True)
-
+    webpage_url = sys.argv[1]
+    pdf_file = sys.argv[2]
+    convert(webpage_url, pdf_file)
