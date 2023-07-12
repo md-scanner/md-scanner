@@ -3,8 +3,13 @@
 # The prefix used for Docker containers and images (not currently the case) created by this script
 DOCKER_PREFIX=md-renderer
 
+if test $# -lt 1; then
+    echo Usage: main.sh DATASET_DIR
+    exit 1
+fi
+
 # The directory where the Markdown files to render are retrieved
-DATASET_DIR=/home/rutayisire/unimore/cv/md-scanner/dataset
+DATASET_DIR=$1
 
 BASE_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &> /dev/null && pwd)
 THEMES=(
