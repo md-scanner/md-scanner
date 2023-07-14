@@ -102,9 +102,9 @@ do
 
     cat >> $BB_HTML_FILE <<- EOM
 <style>
-    h1,h2,h3,h4,h5,h6 { outline: 3px solid red !important; }
-    p { outline: 3px solid blue !important; }
-    pre { outline: 3px solid green !important; }
+    h1,h2,h3,h4,h5,h6 { outline: 3px solid #FF0000 !important; }
+    p { outline: 3px solid #0000FF !important; }
+    pre { outline: 3px solid #00FF00 !important; }
     ul { outline: 3px solid yellow !important; }
     ol { outline: 3px solid pink !important; }
    

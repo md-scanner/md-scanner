@@ -91,11 +91,10 @@ bb_result_t find_next_bb(Mat &img, size_t start = 0, size_t col = 1 << 31) {
             (ret.type == code && !is_green(p)) ||
             (ret.type == title && !is_red(p))
         ) {
+            ret.start_x++; // going back since the loop stops after the end
             break;
         }
     }
-
-    ret.start_x++; // giving some margin
 
     // find end x
     for(ret.end_x = col; ret.end_x < img.cols; ret.end_x++) {
@@ -105,25 +104,24 @@ bb_result_t find_next_bb(Mat &img, size_t start = 0, size_t col = 1 << 31) {
             (ret.type == code && !is_green(p)) ||
             (ret.type == title && !is_red(p))
         ) {
+            ret.end_x--; // going back since the loop stops after the end
             break;
         }
     }
 
-    ret.end_x--; // giving some margin
-
     // find end y
     for(ret.end_y = ret.start_y; ret.end_y < img.rows; ret.end_y++) {
-        Vec3b p = img.at<Vec3b>(ret.end_y, ret.end_x);
+        Vec3b p = img.at<Vec3b>(ret.end_y, ret.start_x);
         if(
             (ret.type == paragraph && !is_blue(p)) ||
             (ret.type == code && !is_green(p)) ||
             (ret.type == title && !is_red(p))
         ) {
+            ret.end_y--; // same reason as above
             break;
         }
     }
 
-    ret.end_y--;
 
 
     return ret;
