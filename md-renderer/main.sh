@@ -167,10 +167,8 @@ do
 
     # check whether we are processing a bb or non-bb file and pick output format accordingly
     if [[ $HTML_FILE =~ \-bb.html$ ]]; then
-        echo "$HTML_FILE with bb, outputting png"
         convert -density $OUTPUT_IMAGE_DENSITY $PDF_FILE $PNG_FILE
     else
-        echo "$HTML_FILE without bb, outputting jpeg"
 	    convert -density $OUTPUT_IMAGE_DENSITY $PDF_FILE $JPG_FILE
     fi
 
