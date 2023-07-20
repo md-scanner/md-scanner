@@ -2,6 +2,7 @@
 
 # The prefix used for Docker containers and images (not currently the case) created by this script
 DOCKER_PREFIX=md-renderer
+OUTPUT_IMAGE_DENSITY=200
 
 if test $# -lt 1; then
     echo Usage: main.sh DATASET_DIR
@@ -152,6 +153,7 @@ do
     
     PDF_FILE="${HTML_FILE%.html}.pdf"
     JPG_FILE="${HTML_FILE%.html}.jpg"
+    PNG_FILE="${HTML_FILE%.html}.png"
 
     JEKYLL_DOC_URL="http://localhost:$JEKYLL_PORT/$HTML_FILENAME_WITH_EXT"
 
@@ -161,9 +163,16 @@ do
     
     echo "Done!"
 
-    echo -n "$I/$COUNT Converting PDF to JPGs... "
+    echo -n "$I/$COUNT Converting PDF to image(s)... "
 
-	convert -density 200 $PDF_FILE $JPG_FILE
+    # check whether we are processing a bb or non-bb file and pick output format accordingly
+    if [[ $HTML_FILE =~ \-bb.html$ ]]; then
+        echo "$HTML_FILE with bb, outputting png"
+        convert -density $OUTPUT_IMAGE_DENSITY $PDF_FILE $PNG_FILE
+    else
+        echo "$HTML_FILE without bb, outputting jpeg"
+	    convert -density $OUTPUT_IMAGE_DENSITY $PDF_FILE $JPG_FILE
+    fi
 
     echo "Done!"
 
