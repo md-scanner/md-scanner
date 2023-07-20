@@ -1,5 +1,4 @@
 #!/bin/sh
-# La Leonardi sarebbe orgogliosa
 
 TEMPLATES_DIR=/usr/share/haskell-pandoc/data/templates
 
