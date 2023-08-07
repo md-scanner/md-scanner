@@ -10,7 +10,17 @@ Other requirements are:
 * for the `md-renderer`: ImageMagick and:
     1. Pandoc and the themes from [this repository](https://github.com/cab-1729/Pandoc-Themes) and associated fonts for the MD->Latex->PDF->JPG conversion (no BBs generated), using the `gen_pdfs.sh` shell script.
     2. Docker (and an active Internet connection to allow it to fetch images remotely) for the MD->HTML->PDF->JPG/PNG conversion (with generated BBs), using the `main.sh` Bash script.
-* for the `bb-extractor`: CMake, a C++ toolchain, OpenCV and its development headers.
+* for the `bb-extractor`: CMake, a C++ toolchain, OpenCV and its development headers;
+* for `to-coco-format`: Python 3 and `pandas`
+
+
+## Steps to generate the dataset
+
+* retrieve Markdown files from the GitHub API using `md-retriever`;
+* generate images from those Markdown files using `md-renderer`;
+* extract bounding box coordinates to CSV files using `extract-bbs`.
+
+To convert the dataset to CoCo format, use `to-coco-format`. 
 
 ## Resources:
 - PubLayNet (Jupyter Notebook): https://github.com/ibm-aur-nlp/PubLayNet/blob/master/exploring_PubLayNet_dataset.ipynb
