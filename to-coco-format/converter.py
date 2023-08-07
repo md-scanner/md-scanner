@@ -33,10 +33,12 @@ out = {
         {"supercategory": "", "id": 5, "name": "figure"}
     ]
 }
+annotation_id = 0
 for i, f in enumerate(glob(argv[1] + '/*.csv')):
     df = pd.read_csv(f)
     # add the image to the image list
     image_id = i # alternativa: int.from_bytes(f.encode())
+    
     out["images"].append(
         {
             "width": 1700,
@@ -48,6 +50,7 @@ for i, f in enumerate(glob(argv[1] + '/*.csv')):
     for _, el in df.iterrows():
         out["annotations"].append(
             {
+                "id": annotation_id,
                 "image_id": image_id,
                 "area": (el['End X']-el['Start X']) * (el['End Y']-el['Start Y']),
                 "category_id": category_conversion(el["Type"]),
@@ -72,5 +75,6 @@ for i, f in enumerate(glob(argv[1] + '/*.csv')):
                 ]
             }
         )
+        annotation_id+=1
 
 print(dumps(out, default=str))
