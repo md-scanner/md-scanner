@@ -17,11 +17,12 @@ def category_conversion(input_cat: int) -> int:
     none, paragraph, title, code, ul, ol
     """
     if input_cat < 3:
-        return input_cat
+        return int(input_cat)
     if input_cat == 3:
         return 1
     else:
         return 3
+
 out = {
     "annotations": [],
     "images": [],
