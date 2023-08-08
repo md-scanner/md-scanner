@@ -53,25 +53,26 @@ for i, f in enumerate(glob(argv[1] + '/*.csv')):
             {
                 "id": annotation_id,
                 "image_id": image_id,
-                "area": (el['End X']-el['Start X']) * (el['End Y']-el['Start Y']),
+                "area": int((el['End X']-el['Start X']) * (el['End Y']-el['Start Y'])),
                 "category_id": category_conversion(el["Type"]),
                 "iscrowd": 0,
                 "bbox": [ # x,y,width,height
-                    el['Start X'],
-                    el['Start Y'],
-                    el['End X']-el['Start X'],
-                    el['End Y']-el['Start Y'],
+                    # type conversion due to something weird happening with pandas
+                    int(el['Start X']),
+                    int(el['Start Y']),
+                    int(el['End X']-el['Start X']),
+                    int(el['End Y']-el['Start Y']),
                 ],
                 "segmentation": [ # polygon format: list of x,y coordinates of vertices
                     [
-                        el['Start X'],
-                        el['Start Y'],
-                        el['End X'],
-                        el['Start Y'],
-                        el['End X'],
-                        el['End Y'],
-                        el['Start X'],
-                        el['End Y'],
+                        int(el['Start X']),
+                        int(el['Start Y']),
+                        int(el['End X']),
+                        int(el['Start Y']),
+                        int(el['End X']),
+                        int(el['End Y']),
+                        int(el['Start X']),
+                        int(el['End Y']),
                     ]
                 ]
             }
