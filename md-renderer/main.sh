@@ -74,7 +74,7 @@ for theme in  ${THEMES[@]}; do
     echo Generating with theme $theme
 
     # Generate Jekyll config
-    cat >> $BASE_DIR/jekyll/_config.yml << EOF
+    cat > $BASE_DIR/jekyll/_config.yml << EOF
 theme: $theme
 
 repository: MD-Scanner/$theme
