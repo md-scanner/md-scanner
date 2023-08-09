@@ -36,7 +36,7 @@ out = {
 }
 annotation_id = 0
 for i, f in enumerate(glob(argv[1] + '/*.csv')):
-    df = pd.read_csv(f)
+    df = pd.read_csv(f, dtype=int)
     # add the image to the image list
     image_id = i # alternativa: int.from_bytes(f.encode())
     
@@ -53,30 +53,29 @@ for i, f in enumerate(glob(argv[1] + '/*.csv')):
             {
                 "id": annotation_id,
                 "image_id": image_id,
-                "area": int((el['End X']-el['Start X']) * (el['End Y']-el['Start Y'])),
+                "area": (el['End X']-el['Start X']) * (el['End Y']-el['Start Y']),
                 "category_id": category_conversion(el["Type"]),
                 "iscrowd": 0,
                 "bbox": [ # x,y,width,height
-                    # type conversion due to something weird happening with pandas
-                    int(el['Start X']),
-                    int(el['Start Y']),
-                    int(el['End X']-el['Start X']),
-                    int(el['End Y']-el['Start Y']),
+                    el['Start X'],
+                    el['Start Y'],
+                    el['End X']-el['Start X'],
+                    el['End Y']-el['Start Y'],
                 ],
                 "segmentation": [ # polygon format: list of x,y coordinates of vertices
                     [
-                        int(el['Start X']),
-                        int(el['Start Y']),
-                        int(el['End X']),
-                        int(el['Start Y']),
-                        int(el['End X']),
-                        int(el['End Y']),
-                        int(el['Start X']),
-                        int(el['End Y']),
+                        el['Start X'],
+                        el['Start Y'],
+                        el['End X'],
+                        el['Start Y'],
+                        el['End X'],
+                        el['End Y'],
+                        el['Start X'],
+                        el['End Y'],
                     ]
                 ]
             }
         )
         annotation_id+=1
 
-print(dumps(out, default=str))
+print(dumps(out, default=int))

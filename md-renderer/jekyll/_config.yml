@@ -20,3 +20,27 @@ render_with_liquid: false
 # Using jekyll-theme-tactile 0.2.0
 # Using jekyll-theme-cayman 0.2.0
 # Using jekyll-theme-hacker 0.2.0
+theme: jekyll-theme-architect
+
+repository: MD-Scanner/jekyll-theme-architect
+author: Filippo Marinelli, Lorenzo Rutayisire and Carmine Zaccagnino
+
+render_with_liquid: false
+theme: jekyll-theme-architect
+
+repository: MD-Scanner/jekyll-theme-architect
+author: Filippo Marinelli, Lorenzo Rutayisire and Carmine Zaccagnino
+
+render_with_liquid: false
+theme: jekyll-theme-architect
+
+repository: MD-Scanner/jekyll-theme-architect
+author: Filippo Marinelli, Lorenzo Rutayisire and Carmine Zaccagnino
+
+render_with_liquid: false
+theme: jekyll-theme-architect
+
+repository: MD-Scanner/jekyll-theme-architect
+author: Filippo Marinelli, Lorenzo Rutayisire and Carmine Zaccagnino
+
+render_with_liquid: false
