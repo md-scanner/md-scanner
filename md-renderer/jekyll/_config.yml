@@ -1,6 +1,6 @@
-theme: jekyll-theme-architect
+theme: jekyll-theme-hacker
 
-repository: MD-Scanner/jekyll-theme-architect
+repository: MD-Scanner/jekyll-theme-hacker
 author: Filippo Marinelli, Lorenzo Rutayisire and Carmine Zaccagnino
 
 render_with_liquid: false

@@ -152,6 +152,8 @@ EOM
     echo -n "."
     done
 
+    sleep 0.1
+
     echo " Done!"
 
     # For every HTML file we have on the site, we access it through Selenium and save the PDF
@@ -189,6 +191,9 @@ EOM
 
         ((I++))
     done
+
+    cp $JEKYLL_SITE_DIR/*.jpg $DATASET_DIR
+    cp $JEKYLL_SITE_DIR/*.png $DATASET_DIR
 
     # Finally we forcefully stop the Jekyll server by deleting its container
     docker rm --force $DOCKER_PREFIX-jekyll-server
