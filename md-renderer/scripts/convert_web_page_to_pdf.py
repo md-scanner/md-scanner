@@ -8,8 +8,6 @@ import sys
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service as ChromeService
-from selenium.webdriver.support.expected_conditions import staleness_of
-from webdriver_manager.chrome import ChromeDriverManager
 
 def convert(
     source: str,
@@ -62,7 +60,6 @@ def __get_pdf_from_html(
     webdriver_prefs["profile.default_content_settings"] = {"images": 2}
 
     driver = webdriver.Chrome(
-        service=ChromeService(ChromeDriverManager().install()),
         options=webdriver_options
     )
 
