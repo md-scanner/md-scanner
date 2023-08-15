@@ -11,17 +11,12 @@ if len(argv) < 2:
 
 def category_conversion(input_cat: int) -> int:
     """
-    PubLayNet categories:
-    text ("1"), title ("2"), list ("3"), table ("4"), figure ("5")
     Our categories:
     none, paragraph, title, code, ul, ol
     """
-    if input_cat < 3:
-        return int(input_cat)
-    if input_cat == 3:
-        return 1
-    else:
-        return 3
+    if input_cat == 5:
+        return 6
+    return int(input_cat)
 
 out = {
     "annotations": [],
@@ -29,9 +24,10 @@ out = {
     "categories": [
         {"supercategory": "","id": 1, "name": "text"},
         {"supercategory": "", "id": 2, "name": "title"},
-        {"supercategory": "", "id": 3, "name": "list"},
-        {"supercategory": "", "id": 4, "name": "table"},
-        {"supercategory": "", "id": 5, "name": "figure"}
+        {"supercategory": "", "id": 3, "name": "code"},
+        {"supercategory": "", "id": 4, "name": "ul"},
+        {"supercategory": "", "id": 5, "name": "figure"},
+        {"supercategory": "", "id": 6, "name": "ol"},
     ]
 }
 annotation_id = 0

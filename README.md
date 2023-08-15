@@ -20,7 +20,7 @@ Other requirements are:
 * generate images from those Markdown files using `md-renderer`;
 * extract bounding box coordinates to CSV files using `extract-bbs`.
 
-To convert the dataset to CoCo format, use `to-coco-format`. 
+To convert the dataset to (PubLayNet-like) COCo format by generating a JSON file from the CSVs, use `to-coco-format`. 
 
 ## Resources:
 - PubLayNet (Jupyter Notebook): https://github.com/ibm-aur-nlp/PubLayNet/blob/master/exploring_PubLayNet_dataset.ipynb

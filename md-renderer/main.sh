@@ -114,11 +114,17 @@ EOF
 
         cat >> $BB_HTML_FILE <<- EOM
 <style>
-    h1,h2,h3,h4,h5,h6 { outline: 3px solid #FF0000 !important; }
+    h1 { outline: 3px solid #FF0000 !important; }
+    h2 { outline: 3px solid #FF00FF !important; }
+    h3 { outline: 3px solid #AA10FF !important; }
+    h4 { outline: 3px solid #10BBFF !important; }
+    h5 { outline: 3px solid #00FFFF !important; }
+    h6 { outline: 3px solid #0090FF !important; }
+    img { outline: 3px solid #50AA90 !important; }
     p { outline: 3px solid #0000FF !important; }
     pre { outline: 3px solid #00FF00 !important; }
-    ul { outline: 3px solid yellow !important; }
-    ol { outline: 3px solid pink !important; }
+    ul { outline: 3px solid #FFFF00 !important; }
+    ol { outline: 3px solid #FFC0CB !important; }
 </style>
 EOM
         echo "Done!"
