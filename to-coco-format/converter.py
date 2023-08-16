@@ -14,8 +14,6 @@ def category_conversion(input_cat: int) -> int:
     Our categories:
     none, paragraph, title, code, ul, ol
     """
-    if input_cat == 5:
-        return 6
     return int(input_cat)
 
 out = {
@@ -23,11 +21,16 @@ out = {
     "images": [],
     "categories": [
         {"supercategory": "","id": 1, "name": "text"},
-        {"supercategory": "", "id": 2, "name": "title"},
+        {"supercategory": "", "id": 2, "name": "h1"},
         {"supercategory": "", "id": 3, "name": "code"},
         {"supercategory": "", "id": 4, "name": "ul"},
         {"supercategory": "", "id": 5, "name": "figure"},
         {"supercategory": "", "id": 6, "name": "ol"},
+        {"supercategory": "", "id": 7, "name": "h2"},
+        {"supercategory": "", "id": 8, "name": "h3"},
+        {"supercategory": "", "id": 9, "name": "h4"},
+        {"supercategory": "", "id": 10, "name": "h5"},
+        {"supercategory": "", "id": 11, "name": "h6"},
     ]
 }
 annotation_id = 0
