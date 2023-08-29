@@ -40,11 +40,11 @@ JEKYLL_PORT=4000
 JEKYLL_SITE_DIR=$BASE_DIR/jekyll/_site
 
 # Clean Jekyll's src directory
-rm $BASE_DIR/jekyll/*.md
+rm -f $BASE_DIR/jekyll/*.md
 
 # Clean Jekyll's dist directory
-rm $JEKYLL_SITE_DIR/*.html
-rm $JEKYLL_SITE_DIR/*.md
+rm -f $JEKYLL_SITE_DIR/*.html
+rm -f $JEKYLL_SITE_DIR/*.md
 
 # Move non-rendered Markdown files to the Jekyll source directory
 I=1
