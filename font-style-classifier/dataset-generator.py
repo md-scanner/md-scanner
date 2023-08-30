@@ -2,94 +2,141 @@ from PIL import Image, ImageDraw, ImageFont
 import os
 from os import path
 import re
+import csv
 
 
-GOOGLE_FONTS_DIR="/tmp/fonts/"
-FSC_DATASET_DIR="/tmp/fsc-dataset"
+GOOGLE_FONTS_DIR="/home/rutayisire/unimore/cv/md-scanner/fonts"
+FSC_DATASET_DIR="/home/rutayisire/unimore/cv/md-scanner/fsc-dataset"
 
 
 FONT_BLACKLIST=[
     "zillaslabhighlight",
+    "notocoloremojicompattest"
 ]
 
 
-num_generated_images = 0
+class DatasetGenerator:
+    def __init__(self):
+        self.num_generated_images = 0
+        self.descriptor = {}
 
 
-def generate_characters_for_font_style(ttf_file, font_id, is_italic, is_bold):
-    global num_generated_images
+    def write_descriptor(self):
+        with open(path.join(FSC_DATASET_DIR, "dataset.csv"), "w") as f:
+            writer = csv.writer(f)
+            writer.writerow(["font", "char", "is_italic", "is_bold", 'filename'])
 
-    chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+            for _, entry in self.descriptor.items():
+                writer.writerow([
+                    entry['font'],
+                    entry['char'],
+                    entry['is_italic'],
+                    entry['is_bold'],
+                    entry['filename']
+                ])
 
-    if not path.exists(FSC_DATASET_DIR):
-        os.mkdir(FSC_DATASET_DIR)
 
-    print(f"{font_id}: ", end="")
+    def generate_characters_for_font_style(self, ttf_file, font_id, is_italic, is_bold):
+        chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 
-    for char in chars:
-        char_filename = path.join(FSC_DATASET_DIR, f"{font_id}-{char}-{'i' if is_italic else ''}{'b' if is_bold else ''}.png")
-        char_filename_exists = path.exists(char_filename)
+        if not path.exists(FSC_DATASET_DIR):
+            os.mkdir(FSC_DATASET_DIR)
 
-        print('_' if char_filename_exists else char, end="")
+        print(f"{font_id}: ", end="")
 
-        if char_filename_exists:
-            continue
-
-        img = Image.new('RGB', (32, 32), color=(255, 255, 255))
         font = ImageFont.truetype(ttf_file, size=24)
+        
+        for char in chars:
+            try:
+                char_img_filename = f"{font_id}-{char}-{'i' if is_italic else ''}{'b' if is_bold else ''}.png"
+                char_img_path = path.join(FSC_DATASET_DIR, char_img_filename)
 
-        char_size = font.getsize(char)
-        char_pos = ((32 - char_size[0]) / 2, (32 - char_size[1]) / 2)
+                if path.exists(char_img_path):
+                    print("_", end="")
+                else:
+                    char_img = Image.new('L', (32, 32), color=255)
 
-        d = ImageDraw.Draw(img)
-        d.text(xy=char_pos, text=char, font=font, fill=(0, 0, 0))
-        img.save()
+                    char_size = font.getsize(char)
+                    char_pos = ((32 - char_size[0]) / 2, (32 - char_size[1]) / 2)
 
-        num_generated_images += 1
+                    d = ImageDraw.Draw(char_img)
+                    d.text(xy=char_pos, text=char, font=font, fill=0)
+                    char_img.save(char_img_path)
 
-    print(f" ({num_generated_images} images)")
+                    self.num_generated_images += 1
 
+                    print(char, end="")
 
-def generate():
-    filename_rgx = re.compile(r'(?:^|\s+)filename: \"([^\"]*)\"', re.IGNORECASE)
-    style_rgx = re.compile(r'(?:^|\s+)style: \"([^\"]*)\"', re.IGNORECASE)
-    weight_rgx = re.compile(r'(?:^|\s+)weight: ([^\s]*)', re.IGNORECASE)
+            except Exception as e:
+                # To ignore:
+                # - OSError: execution context too long
 
-    ofl_fonts_dir = path.join(GOOGLE_FONTS_DIR, "ofl")
+                if isinstance(e, KeyboardInterrupt):
+                    raise e
 
-    for font_dirname in os.listdir(ofl_fonts_dir):
-        if not path.exists(path.join(ofl_fonts_dir, font_dirname, "METADATA.pb")):
-            continue
-
-        if font_dirname in FONT_BLACKLIST:
-            continue
-
-        with open(path.join(ofl_fonts_dir, font_dirname, "METADATA.pb")) as f:
-            metadata = f.read()
-
-            filename_matches = filename_rgx.findall(metadata)
-            style_matches = style_rgx.findall(metadata)
-            weight_matches = weight_rgx.findall(metadata)
-
-            num_styles = len(filename_matches)
-
-            if num_styles != len(style_matches) and num_styles != len(weight_matches):
+                print("!", end="")
                 continue
 
-            for i in range(num_styles):
-                filename = filename_matches[i]
-                style = style_matches[i]
-                weight = int(weight_matches[i])
+            # The char was generated
+            self.descriptor[char_img_filename] = {
+                'font': font_id,
+                'char': char,
+                'is_italic': is_italic,
+                'is_bold': is_bold,
+                'filename': char_img_filename,
+            }
+        
+        print(f" ({self.num_generated_images} images)")
 
-                is_italic = style == "italic"
-                is_bold = weight > 500
 
-                ttf_file = path.join(ofl_fonts_dir, font_dirname, filename)
+    def generate(self):
+        self.num_generated_images = 0
+        self.descriptor = {}
 
-                font_id = font_dirname.replace("-", "_")
-                generate_characters_for_font_style(ttf_file, font_id, is_italic, is_bold)
+        filename_rgx = re.compile(r'(?:^|\s+)filename: \"([^\"]*)\"', re.IGNORECASE)
+        style_rgx = re.compile(r'(?:^|\s+)style: \"([^\"]*)\"', re.IGNORECASE)
+        weight_rgx = re.compile(r'(?:^|\s+)weight: ([^\s]*)', re.IGNORECASE)
+
+        ofl_fonts_dir = path.join(GOOGLE_FONTS_DIR, "ofl")
+
+        for font_dirname in os.listdir(ofl_fonts_dir):
+            if not path.exists(path.join(ofl_fonts_dir, font_dirname, "METADATA.pb")):
+                continue
+
+            if font_dirname in FONT_BLACKLIST:
+                continue
+
+            with open(path.join(ofl_fonts_dir, font_dirname, "METADATA.pb")) as f:
+                metadata = f.read()
+
+                filename_matches = filename_rgx.findall(metadata)
+                style_matches = style_rgx.findall(metadata)
+                weight_matches = weight_rgx.findall(metadata)
+
+                num_styles = len(filename_matches)
+
+                if num_styles != len(style_matches) and num_styles != len(weight_matches):
+                    continue
+
+                for i in range(num_styles):
+                    filename = filename_matches[i]
+                    style = style_matches[i]
+                    weight = int(weight_matches[i])
+
+                    is_italic = style == "italic"
+                    is_bold = weight > 500
+
+                    ttf_file = path.join(ofl_fonts_dir, font_dirname, filename)
+
+                    font_id = font_dirname.replace("-", "_")
+                    self.generate_characters_for_font_style(ttf_file, font_id, is_italic, is_bold)
+
+
+        print(f"Generated {self.num_generated_images} images, writing .csv descriptor (entries: {len(self.descriptor)})...")
+        self.write_descriptor()
 
 
 if __name__ == "__main__":
-    generate()
+    generator = DatasetGenerator()
+    generator.generate()
 
