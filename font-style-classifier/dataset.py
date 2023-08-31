@@ -14,7 +14,7 @@ import pandas as pd
 # ------------------------------------------------------------------------------------------------
 
 class FSC_Dataset:
-    def __init__(self, dataset_csv: str, root_dir: str, epoch_dim):
+    def __init__(self, dataset_csv: str, root_dir: str, epoch_dim=1024):
         self.df = pd.read_csv(dataset_csv)
         self.root_dir = root_dir
         self.epoch_dim = epoch_dim
