@@ -8,35 +8,77 @@ from torch.nn import functional as F
 # - https://datahacker.rs/019-siamese-network-in-pytorch-with-application-to-face-similarity/
 
 
+
+def count_learnable_params(model: nn.Module) -> int:
+    return sum(param.numel() for param in model.parameters() if param.requires_grad)
+
+
 class FSC_Encoder(nn.Module):
     def __init__(self):
         super(FSC_Encoder, self).__init__()
         
-        self.conv1 = nn.Conv2d(in_channels=1, out_channels=16, kernel_size=3)
-        self.pool1 = nn.MaxPool2d((2, 2))
-        self.conv2 = nn.Conv2d(in_channels=16, out_channels=32, kernel_size=3)
-        self.conv3 = nn.Conv2d(in_channels=32, out_channels=64, kernel_size=3)
-        self.conv4 = nn.Conv2d(in_channels=64, out_channels=64, kernel_size=3)
-        self.pool4 = nn.MaxPool2d((2, 2))
+        self.cnn = nn.Sequential(
+            # 32x32:1
+            nn.Conv2d(in_channels=1, out_channels=256, kernel_size=3, padding="same"),
+            nn.ReLU(),
+            nn.Conv2d(in_channels=256, out_channels=256, kernel_size=3, padding="same"),
+            nn.ReLU(),
+            nn.Conv2d(in_channels=256, out_channels=256, kernel_size=3, padding="same"),
+            nn.ReLU(),
+            nn.MaxPool2d((2, 2)),
+            # 16x16:256
+            nn.Conv2d(in_channels=256, out_channels=512, kernel_size=3, padding="same"),
+            nn.ReLU(),
+            nn.Conv2d(in_channels=512, out_channels=512, kernel_size=3, padding="same"),
+            nn.ReLU(),
+            nn.Conv2d(in_channels=512, out_channels=512, kernel_size=3, padding="same"),
+            nn.ReLU(),
+            nn.Conv2d(in_channels=512, out_channels=512, kernel_size=3, padding="same"),
+            nn.ReLU(),
+            nn.MaxPool2d((2, 2)),
+            # 8x8:512
+            nn.Conv2d(in_channels=512, out_channels=512, kernel_size=3, padding="same"),
+            nn.ReLU(),
+            nn.Conv2d(in_channels=512, out_channels=512, kernel_size=3, padding="same"),
+            nn.ReLU(),
+            nn.Conv2d(in_channels=512, out_channels=512, kernel_size=3, padding="same"),
+            nn.ReLU(),
+            nn.Conv2d(in_channels=512, out_channels=512, kernel_size=3, padding="same"),
+            nn.ReLU(),
+            nn.MaxPool2d((2, 2)),
+            # 4x4:512
+        )
 
+        self.fc = nn.Sequential(
+            nn.Linear(in_features=4 * 4 * 512, out_features=4096),
+            nn.Linear(in_features=4096, out_features=4096),
+            nn.Linear(in_features=4096, out_features=4096),
+            nn.Linear(in_features=4096, out_features=1024),
+        )
 
+    
     def forward(self, x):
-        x = self.conv1(x)
-        x = F.relu(x)
-        x = self.pool1(x)
-        x = self.conv2(x)
-        x = F.relu(x)
-        x = self.conv3(x)
-        x = F.relu(x)
-        x = self.conv4(x)
-        x = F.relu(x)
-        x = self.pool4(x)
-
-        x = x.flatten(1)
-
+        x = self.cnn(x)
+        x = torch.flatten(x, start_dim=1)
+        x = self.fc(x)
         return x
 
 
     def load_checkpoint(self, checkpoint):
         self.load_state_dict(checkpoint['model_state_dict'])
+
+
+if __name__ == "__main__":
+    model = FSC_Encoder()
+    print(f"Learnable params: CNN: {count_learnable_params(model.cnn)}, FC: {count_learnable_params(model.fc)}, Total: {count_learnable_params(model)}")
+
+    print("Inference test:")
+
+    x = torch.randn(1, 1, 32, 32)
+    print("x:", x.shape)
+    
+    y = model(x)
+    print("y:", y.shape)
+
+
 

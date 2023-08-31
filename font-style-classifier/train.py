@@ -38,7 +38,7 @@ class ContrastiveLoss(nn.Module):
 
 
 # How many items are uploaded to the GPU in parallel
-BATCH_SIZE = 64
+BATCH_SIZE = 300
 
 # The dimension of an epoch in terms of iterations (i.e. the number of batch to draw from the dataset)
 EPOCH_DIM = 128
@@ -55,7 +55,7 @@ class Trainer:
         self.model.cuda()
 
         self.loss_fn = ContrastiveLoss()
-        self.optimizer = torch.optim.Adam(self.model.parameters(), lr=1e-4)
+        self.optimizer = torch.optim.Adam(self.model.parameters(), lr=0.0004)
 
         self.dataset = FSC_Dataset(
             "/home/rutayisire/unimore/cv/md-scanner/fsc-dataset/dataset.csv",
@@ -148,35 +148,44 @@ class Trainer:
 
             # The sum of the distances of inputs of the same font.
             # We expect this to decrease over training
-            sf_sum = 0.0
+            sf_mean_dist = 0.0
 
             # The sum of the distances of inputs of diffeerent fonts.
             # We expect this to increase over training
-            df_sum = 0.0
+            df_mean_dist = 0.0
 
             num_validation_iters = 128
 
             for _ in range(num_validation_iters):
                 x1, x2, _ = self.dataset.pick_same_font_input(font)
-                x1, x2 = x1.cuda(), x2.cuda()
+                x1, x2 = x1.cuda(), x2.cuda()  # Move to GPU
+ 
+                # Insert one dimension for the batch
+                x1, x2 = torch.unsqueeze(x1, 0), torch.unsqueeze(x2, 0)
 
                 y1 = self.model(x1)
                 y2 = self.model(x2)
 
                 d = torch.norm(y1 - y2)
-                sf_sum += d
+                sf_mean_dist += d
 
             for _ in range(num_validation_iters):
                 x1, x2, _ = self.dataset.pick_diff_font_input(font)
-                x1, x2 = x1.cuda(), x2.cuda()
+                x1, x2 = x1.cuda(), x2.cuda()  # Move to GPU
+ 
+                # Insert one dimension for the batch
+                x1, x2 = torch.unsqueeze(x1, 0), torch.unsqueeze(x2, 0)
 
                 y1 = self.model(x1)
                 y2 = self.model(x2)
 
                 d = torch.norm(y1 - y2)
-                df_sum += d
-            
-        print(f"VAL - Num iters: {num_validation_iters}, SF sum: {sf_sum:.3f}, DF sum: {df_sum:.3f}")
+                df_mean_dist += d
+        
+        sf_mean_dist /= num_validation_iters
+        df_mean_dist /= num_validation_iters
+
+        print(f"VAL - Num iters: {num_validation_iters}, SF sum: {sf_mean_dist:.3f}, DF sum: {df_mean_dist:.3f}")
 
 
     def save_checkpoint(self):

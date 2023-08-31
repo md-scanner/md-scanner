@@ -41,8 +41,8 @@ def run_inference(model: FSC_Encoder):
     for _ in range(10):
         x1, x2, _ = dataset.pick_same_font_input(font)
 
-        y1 = model(x1)
-        y2 = model(x2)
+        y1 = model(torch.unsqueeze(x1, 0))
+        y2 = model(torch.unsqueeze(x2, 0))
         dist = torch.norm(y1 - y2)
 
         sf_results.append((x1, x2, dist))
@@ -50,8 +50,8 @@ def run_inference(model: FSC_Encoder):
     for _ in range(10):
         x1, x2, _ = dataset.pick_diff_font_input(font)
 
-        y1 = model(x1)
-        y2 = model(x2)
+        y1 = model(torch.unsqueeze(x1, 0))
+        y2 = model(torch.unsqueeze(x2, 0))
         dist = torch.norm(y1 - y2)
 
         df_results.append((x1, x2, dist))
@@ -62,19 +62,17 @@ def run_inference(model: FSC_Encoder):
     plt.show()
 
 
-    #axs[0, i].imshow(x1.permute(1, 2, 0), cmap='gray', vmin=0, vmax=1.0)
-    #axs[0, i].add_patch(plt.Rectangle((0, 0), x1.shape[1], x1.shape[2], fill=False, edgecolor='red', linewidth=1))
-    #axs[0, i].axis('off')
-    #axs[0, i].text(16, 32, f"{dist:.3f}", ha='center', va='center')
-
-
 if __name__ == "__main__":
     checkpoint_file = sys.argv[1]
+
+    print(f"Loading checkpoint \"{checkpoint_file}\"...")
     checkpoint = torch.load(checkpoint_file)
 
+    print(f"Loading model and setting checkpoint up...")
     model = FSC_Encoder()
     model.load_checkpoint(checkpoint)
     model.eval()
 
+    print(f"Inference...")
     run_inference(model)
 
