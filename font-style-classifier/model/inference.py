@@ -33,7 +33,7 @@ def run_inference(model: FSC_Encoder):
     
     font = dataset.pick_random_font()
 
-    fig, axs = plt.subplots(2, 1, figsize=(15, 8))
+    _, axs = plt.subplots(2, 1, figsize=(15, 8))
 
     sf_results = []
     df_results = []

@@ -210,7 +210,7 @@ class Trainer:
         latest_file = path.join(checkpoint_dir, "latest.pt")
         if path.exists(latest_file):
             os.remove(latest_file)
-        os.symlink(checkpoint_file, latest_file)
+        os.symlink(checkpoint_file, path.abspath(latest_file))
 
         print(f"CHK - Saved checkpoint: {checkpoint_filename}")
 
