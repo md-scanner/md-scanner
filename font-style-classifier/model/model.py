@@ -65,6 +65,11 @@ class FSC_Encoder(nn.Module):
 
 
     def load_checkpoint(self, checkpoint):
+        """ Loads the given checkpoint onto the model. The checkpoint can be either a file or a loaded checkpoint. """
+
+        if type(checkpoint) == str:
+            checkpoint = torch.load(checkpoint)
+
         self.load_state_dict(checkpoint['model_state_dict'])
 
 
