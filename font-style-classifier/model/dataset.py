@@ -24,8 +24,7 @@ class FSC_Dataset:
         self.augment = v2.Compose([
             v2.RandomAffine(
                 degrees=0,
-                translate=(0.16, 0.16),
-                scale=(0.74, 1.25),
+                scale=(0.7, 1.0),
                 fill=255
             ),
             v2.Compose([v2.ToImageTensor(), v2.ConvertImageDtype()])

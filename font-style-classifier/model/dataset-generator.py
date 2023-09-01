@@ -1,4 +1,4 @@
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image, ImageDraw, ImageFont, ImageOps
 import os
 from os import path
 import re
@@ -36,6 +36,33 @@ class DatasetGenerator:
                 ])
 
 
+    def _prepare_char_image(self, font, char):
+        _, _, w, h = font.getbbox(char)
+
+        char_img = Image.new('L', (w, h), color=0)
+
+        draw = ImageDraw.Draw(char_img)
+        draw.text(xy=(w / 2, h / 2), text=char, font=font, fill=255, anchor="mm")
+
+        bbox = char_img.getbbox()
+        char_img = char_img.crop(bbox)
+        char_img = ImageOps.invert(char_img)
+
+        w, h = bbox[2] - bbox[0], bbox[3] - bbox[1]
+        side = max(w, h)
+        if h > w:
+            offset = (side - w) // 2, 0
+        else:
+            offset = 0, (side - h) // 2
+
+        img = Image.new('L', (max(w, h), max(w, h)), color=255)
+        img.paste(char_img, offset)
+
+        img = img.resize((32, 32))
+
+        return img
+
+
     def generate_characters_for_font_style(self, ttf_file, font_id, is_italic, is_bold):
         chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 
@@ -44,7 +71,7 @@ class DatasetGenerator:
 
         print(f"{font_id}: ", end="")
 
-        font = ImageFont.truetype(ttf_file, size=24)
+        font = ImageFont.truetype(ttf_file, size=32)
         
         for char in chars:
             try:
@@ -54,14 +81,8 @@ class DatasetGenerator:
                 if path.exists(char_img_path):
                     print("_", end="")
                 else:
-                    char_img = Image.new('L', (32, 32), color=255)
-
-                    char_size = font.getsize(char)
-                    char_pos = ((32 - char_size[0]) / 2, (32 - char_size[1]) / 2)
-
-                    d = ImageDraw.Draw(char_img)
-                    d.text(xy=char_pos, text=char, font=font, fill=0)
-                    char_img.save(char_img_path)
+                    img = self._prepare_char_image(font, char)
+                    img.save(char_img_path)
 
                     self.num_generated_images += 1
 
