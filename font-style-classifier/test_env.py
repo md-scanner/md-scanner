@@ -2,18 +2,14 @@ import random
 import cv2 as cv
 import pandas as pd
 import torchvision.transforms.functional as F
+import os
 from os import path
 
 from prepare_input import prepare_input
 
 
 script_dir = path.dirname(path.realpath(__file__))
-
-
-TEST_DATA = [
-    (path.join(script_dir, "./test_data/img1.jpg"), path.join(script_dir, "./test_data/img1.box")),
-    (path.join(script_dir, "./test_data/img2.jpg"), path.join(script_dir, "./test_data/img2.box")),
-]
+test_data_dir = path.join(script_dir, "test_data")
 
 
 class TestDocument:
@@ -84,6 +80,8 @@ class TestDocument:
 
 
 def sample_document():
-    img_file, box_file = random.choice(TEST_DATA)
-    return TestDocument(img_file, box_file)
+    rand_file = path.join(test_data_dir, random.choice(os.listdir(test_data_dir)))
+    rand_file = path.splitext(rand_file)[0]  # Trim extension
 
+    img_file, box_file = rand_file + ".jpg", rand_file + ".box"
+    return TestDocument(img_file, box_file)

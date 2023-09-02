@@ -1,6 +1,6 @@
 # FSC_Dataset
 
-`FSC_Dataset` is the dataset we use to train `FSC_Encoder`. The dataset currently consists of ~141000 32x32 images of black-on-white characters, belonging to different fonts, and a `.csv` descriptor holding metadata.
+`FSC_Dataset` is the dataset we use to train `FSC_Encoder`. The dataset currently consists of >141000 32x32 images of black-on-white characters belonging to different fonts, and a `.csv` descriptor holding metadata.
 
 ### gen_db.py
 
@@ -61,5 +61,6 @@ python3 gen_db.py
 
 ### References:
 
+- Random markdown generator: https://github.com/jaspervdj/lorem-markdownum 
 - Siamese network: https://builtin.com/machine-learning/siamese-network
 

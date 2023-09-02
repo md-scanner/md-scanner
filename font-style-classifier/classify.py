@@ -7,6 +7,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from os import path
 from PIL import Image
+import time
 import test_env
 
 
@@ -36,6 +37,7 @@ class ClassifyFontStyle:
         """
 
         self.char_list = char_list
+        self.batch_size = len(char_list)
 
         self.model_input = torch.stack([char_img for char_img, _ in self.char_list])
         self.model_input = self.model_input.cuda()
@@ -63,9 +65,12 @@ class ClassifyFontStyle:
 
     def _load_dataset_image(self, filename: str):
         img_path = path.join(FSC_DATASET_DIR, filename)
-        img = Image.open(img_path) 
-        return F.to_tensor(img)
+        img = Image.open(img_path)
     
+        t = F.to_tensor(img)
+        t = torch.floor(t)
+        return t
+
 
     def _load_styled_chars(self):
         self.styled_chars = []
@@ -101,15 +106,52 @@ class ClassifyFontStyle:
             self.styled_chars.append((regular_img, italic_img, bold_img))
     
 
+    def _classify(self):
+        original = torch.stack([entry[0] for entry in self.char_list])
+
+        regular = torch.stack([entry[0] for entry in self.styled_chars])
+        bold = torch.stack([entry[1] for entry in self.styled_chars])
+        italic = torch.stack([entry[2] for entry in self.styled_chars])
+
+        t = torch.stack([original, regular, bold, italic])
+        t = torch.swapaxes(t, 0, 1)
+        # t.shape: (B, 4, 1, 32, 32)
+
+        a = t[:,:1] # (B, 1, 1, 32, 32)
+        b = t[:,1:] # (B, 3, 1, 32, 32)
+
+        d = torch.sum(torch.abs(a - b), dim=(2,3,4))
+        # d.shape: (B, 3)
+
+        self.style_indices = torch.argmin(d, dim=1)  # (B,)
+
+
     def __call__(self):
-        print("Calculating embeddings...")
+        print(f"Calculating embeddings...; Batch size: {self.batch_size}, ", end="")
+        st = time.time()
         self._calc_embeddings()
+        dt = time.time() - st
+        print(f"DT: {dt:.3f}")
 
-        print("Searching for nearest fonts...")
+        print(f"Searching for NN...; Batch size: {self.batch_size}, ", end="")
+        st = time.time()
         self._find_nearest_fonts()
+        dt = time.time() - st
+        print(f"DT: {dt:.3f}")
 
-        print("Loading styled chars...")
+        print(f"Loading styled characters...; Batch size: {self.batch_size}, ", end="")
+        st = time.time()
         self._load_styled_chars()
+        dt = time.time() - st
+        print(f"DT: {dt:.3f}")
+
+        print(f"Performing style classification...; Batch size: {self.batch_size}, ", end="")
+        st = time.time()
+        self._classify()
+        dt = time.time() - st
+        print(f"DT: {dt:.3f}")
+
+        print("Done!")
 
 
 # ------------------------------------------------------------------------------------------------
@@ -120,31 +162,63 @@ class ClassifyFontStyle:
 if __name__ == "__main__":
     test_doc = test_env.sample_document()
 
-    char_list = []
-    for i in range(128):
-        _, _, char_img, char_info = test_doc.sample_char()
-        char_list.append((char_img, char_info['char']))
-    
-    classify = ClassifyFontStyle(char_list)
-    classify()
+    # Show the sampled document
+    fig, axs = plt.subplots(1, 2)
 
-    # Display a grid showing the first num_rows characters
-    grid = []
-    num_rows = 10
+    axs[0].imshow(test_doc.img, cmap='gray', vmin=0, vmax=255)
+    axs[0].axis('off')
 
-    for (char_img, char), (regular_img, italic_img, bold_img) in zip(char_list, classify.styled_chars):
-        grid += [
-            char_img,
-            regular_img if regular_img != None else torch.zeros((1, 32, 32)),
-            italic_img if italic_img != None else torch.zeros((1, 32, 32)),
-            bold_img if bold_img != None else torch.zeros((1, 32, 32)),
-            ]
-        
-        num_rows -= 1
-        if num_rows == 0:
-            break
+    axs[1].imshow(test_doc.bin_img, cmap='gray', vmin=0, vmax=255)
+    axs[1].axis('off')
 
-    grid = torchvision.utils.make_grid(grid, nrow=4)
-    plt.imshow(grid.permute(1, 2, 0))
     plt.show()
+
+    ##
+    num_samples = 10
+
+    while True:
+        # Draw num_samples characters from the document 
+        st = time.time()
+        char_list = []
+        for i in range(num_samples):
+            _, _, char_img, char_info = test_doc.sample_char()
+            char_list.append((char_img, char_info['char']))
+        dt = time.time() - st
+        print(f"Drawn {num_samples} characters; dt: {dt:.3f}")
+        
+        # Classify the drawn samples
+        st = time.time()
+        classify = ClassifyFontStyle(char_list)
+        classify()
+        dt = time.time() - st
+        print(f"Classified; dt: {dt:.3f}")
+
+        # Create a grid listing the drawn characters with their matchings
+        st = time.time()
+        grid = []
+        for \
+            (char_img, char), \
+            nearest_font, \
+            (regular_img, italic_img, bold_img) \
+        in zip(char_list, classify.nearest_fonts, classify.styled_chars):
+            grid += [
+                char_img,
+                regular_img if regular_img != None else torch.zeros((1, 32, 32)),
+                italic_img if italic_img != None else torch.zeros((1, 32, 32)),
+                bold_img if bold_img != None else torch.zeros((1, 32, 32)),
+                ]
+        dt = time.time() - st
+        print(f"Created display grid; dt: {dt:.3f}")
+
+        # Show the plot
+        fig, ax = plt.subplots(figsize=(8, 14))
+        
+        grid = torchvision.utils.make_grid(grid, nrow=4)
+        ax.imshow(grid.permute(1, 2, 0))
+
+        for i, style_idx in enumerate(classify.style_indices):
+            ax.add_patch(plt.Rectangle(((style_idx + 1) * 32, i * 32), 32, 32, fill=False, edgecolor='lime', linewidth=1))
+
+        ax.axis('off')
+        plt.show()
 
