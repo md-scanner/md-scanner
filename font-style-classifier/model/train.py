@@ -39,10 +39,10 @@ class ContrastiveLoss(nn.Module):
 
 
 # How many items are uploaded to the GPU in parallel
-BATCH_SIZE = 400
+BATCH_SIZE = 200
 
 # The dimension of an epoch in terms of iterations (i.e. the number of batch to draw from the dataset)
-EPOCH_DIM = 96
+EPOCH_DIM = 192
 
 # After how much time log the training progress
 TRAINING_LOG_DELAY = 5.0
@@ -90,7 +90,7 @@ class Trainer:
 
 
     def _load_checkpoint(self) -> bool:
-        checkpoint_dir = path.join(script_dir, ".checkpoints")
+        checkpoint_dir = path.join(script_dir, ".verysuperbettercheckpoints")
         latest_filename = path.join(checkpoint_dir, "latest.pt")
         
         if not path.exists(latest_filename):
@@ -199,7 +199,7 @@ class Trainer:
 
 
     def save_checkpoint(self):
-        checkpoint_dir = path.join(script_dir, ".checkpoints")
+        checkpoint_dir = path.join(script_dir, ".verysuperbettercheckpoints")
         checkpoint_filename = f"checkpoint-{datetime.now().strftime('%Y%m%d%H%M%S')}.pt"
         checkpoint_file = path.join(checkpoint_dir, checkpoint_filename)
 

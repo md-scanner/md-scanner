@@ -19,27 +19,23 @@ class FSC_Encoder(nn.Module):
         
         self.cnn = nn.Sequential(
             # 32x32:1
-            nn.Conv2d(in_channels=1, out_channels=256, kernel_size=3, padding="same"),
+            nn.Conv2d(in_channels=1, out_channels=128, kernel_size=3, padding="same"),
             nn.ReLU(),
-            nn.Conv2d(in_channels=256, out_channels=256, kernel_size=3, padding="same"),
+            nn.Conv2d(in_channels=128, out_channels=128, kernel_size=3, padding="same"),
             nn.ReLU(),
-            nn.Conv2d(in_channels=256, out_channels=256, kernel_size=3, padding="same"),
+            nn.Conv2d(in_channels=128, out_channels=128, kernel_size=3, padding="same"),
             nn.ReLU(),
             nn.MaxPool2d((2, 2)),
-            # 16x16:256
-            nn.Conv2d(in_channels=256, out_channels=512, kernel_size=3, padding="same"),
+            # 16x16:128
+            nn.Conv2d(in_channels=128, out_channels=256, kernel_size=3, padding="same"),
             nn.ReLU(),
-            nn.Conv2d(in_channels=512, out_channels=512, kernel_size=3, padding="same"),
+            nn.Conv2d(in_channels=256, out_channels=256, kernel_size=3, padding="same"),
             nn.ReLU(),
-            nn.Conv2d(in_channels=512, out_channels=512, kernel_size=3, padding="same"),
-            nn.ReLU(),
-            nn.Conv2d(in_channels=512, out_channels=512, kernel_size=3, padding="same"),
+            nn.Conv2d(in_channels=256, out_channels=256, kernel_size=3, padding="same"),
             nn.ReLU(),
             nn.MaxPool2d((2, 2)),
             # 8x8:512
-            nn.Conv2d(in_channels=512, out_channels=512, kernel_size=3, padding="same"),
-            nn.ReLU(),
-            nn.Conv2d(in_channels=512, out_channels=512, kernel_size=3, padding="same"),
+            nn.Conv2d(in_channels=256, out_channels=512, kernel_size=3, padding="same"),
             nn.ReLU(),
             nn.Conv2d(in_channels=512, out_channels=512, kernel_size=3, padding="same"),
             nn.ReLU(),
@@ -47,12 +43,21 @@ class FSC_Encoder(nn.Module):
             nn.ReLU(),
             nn.MaxPool2d((2, 2)),
             # 4x4:512
+            nn.Conv2d(in_channels=512, out_channels=1024, kernel_size=3, padding="same"),
+            nn.ReLU(),
+            nn.Conv2d(in_channels=1024, out_channels=1024, kernel_size=3, padding="same"),
+            nn.ReLU(),
+            nn.Conv2d(in_channels=1024, out_channels=1024, kernel_size=3, padding="same"),
+            nn.ReLU(),
+            nn.MaxPool2d((2, 2)),
+            # 2x2:1024
         )
 
         self.fc = nn.Sequential(
-            nn.Linear(in_features=4 * 4 * 512, out_features=4096),
             nn.Linear(in_features=4096, out_features=4096),
+            nn.ReLU(),
             nn.Linear(in_features=4096, out_features=4096),
+            nn.ReLU(),
             nn.Linear(in_features=4096, out_features=1024),
         )
 

@@ -4,7 +4,7 @@ import torch
 import torchvision
 torchvision.disable_beta_transforms_warning()
 
-from dataset import FSC_Dataset
+from dataset import FSC_Dataset, FSC_DATASET_DIR, FSC_DATASET_CSV
 from model import FSC_Encoder
 import matplotlib.pyplot as plt
 
@@ -27,8 +27,8 @@ def fill_axis(ax, results):
 
 def run_inference(model: FSC_Encoder):
     dataset = FSC_Dataset(
-        "/home/rutayisire/unimore/cv/md-scanner/fsc-dataset/dataset.csv",
-        "/home/rutayisire/unimore/cv/md-scanner/fsc-dataset"
+        FSC_DATASET_CSV,
+        FSC_DATASET_DIR
         )
     
     font = dataset.pick_random_font()
@@ -59,7 +59,7 @@ def run_inference(model: FSC_Encoder):
     fill_axis(axs[0], sf_results)
     fill_axis(axs[1], df_results)
 
-    plt.show()
+    plt.savefig("out.png")
 
 
 if __name__ == "__main__":
