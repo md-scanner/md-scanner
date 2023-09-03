@@ -121,16 +121,68 @@ bb_result_t find_next_bb(Mat &img, size_t start = 0, size_t col = 1 << 31) {
         }
     }
 
-    // find end y
+    // find end y: go through both the leading and trailing edge
+    // look at the leading edge
     for(ret.end_y = ret.start_y; ret.end_y < img.rows; ret.end_y++) {
         Vec3b p = img.at<Vec3b>(ret.end_y, ret.start_x);
         bb_type_t type = get_pixel_bb_type(p);
 
         if(ret.type != type) {
-            ret.end_y--; // same reason as above
-            break;
+            size_t start_x = ret.start_x;
+            bool found = false;
+            while(start_x > 0) {
+                start_x--;
+                p = img.at<Vec3b>(ret.end_y, start_x);
+                if(get_pixel_bb_type(p) == ret.type) {
+                    ret.start_x = start_x;
+                    found = true;
+                    break;
+                }
+            }
+            if(!found) {
+                ret.end_y--; // same reason as previously
+                break;
+            }
+            
         }
     }
+
+    // deduplicate bbs: scroll down until there the bb ends
+
+    while(
+        ret.end_y < img.rows &&
+        get_pixel_bb_type(img.at<Vec3b>(ret.end_y, col)) == ret.type
+    ) {
+        ret.end_y++;
+    }
+
+
+    /* look at the trailing edge
+    for(; ret.end_y < img.rows; ret.end_y++) {
+        Vec3b p = img.at<Vec3b>(ret.end_y, ret.end_x);
+        bb_type_t type = get_pixel_bb_type(p);
+
+        if(ret.type != type) {
+            printf("END: Risking crashing out at y=%d\n", ret.end_y);
+            size_t end_x = ret.start_x;
+            bool found = false;
+            while(end_x < img.cols) {
+                end_x++;
+                p = img.at<Vec3b>(ret.end_y, end_x);
+                if(get_pixel_bb_type(p) == type) {
+                    ret.end_x = end_x;
+                    found = true;
+                    break;
+                }
+            }
+            if(!found) {
+                ret.end_y--; // same reason as previously
+                printf("END: Crashing out at y=%d\n", ret.end_y);
+                break;
+            }
+        }
+    }*/
+
 
 
 

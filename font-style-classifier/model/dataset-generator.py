@@ -5,8 +5,8 @@ import re
 import csv
 
 
-GOOGLE_FONTS_DIR="/home/rutayisire/unimore/cv/md-scanner/fonts"
-FSC_DATASET_DIR="/home/rutayisire/unimore/cv/md-scanner/fsc-dataset"
+GOOGLE_FONTS_DIR="/work/cvcs_2023_group28/dataset-retriever/font-style-classifier/fonts"
+FSC_DATASET_DIR="/work/cvcs_2023_group28/dataset-retriever/font-style-classifier/dataset"
 
 
 FONT_BLACKLIST=[

@@ -6,6 +6,7 @@ import torch
 from torch import nn
 from torch.nn import functional as F
 from torch.utils.data import DataLoader
+
 from model import FSC_Encoder
 
 import torchvision
@@ -38,10 +39,10 @@ class ContrastiveLoss(nn.Module):
 
 
 # How many items are uploaded to the GPU in parallel
-BATCH_SIZE = 300
+BATCH_SIZE = 400
 
 # The dimension of an epoch in terms of iterations (i.e. the number of batch to draw from the dataset)
-EPOCH_DIM = 128
+EPOCH_DIM = 96
 
 # After how much time log the training progress
 TRAINING_LOG_DELAY = 5.0
@@ -49,17 +50,27 @@ TRAINING_LOG_DELAY = 5.0
 
 # checkpoint-20230831005021.pt
 
+FSC_DATASET_DIR = "/work/cvcs_2023_group28/dataset-retriever/font-style-classifier/dataset"
+FSC_DATASET_CSV = path.join(FSC_DATASET_DIR, "dataset.csv")
+
+
 class Trainer:
     def __init__(self, model: FSC_Encoder, load_latest_checkpoint=False):
         self.model = model
         self.model.cuda()
 
         self.loss_fn = ContrastiveLoss()
+        
         self.optimizer = torch.optim.Adam(self.model.parameters(), lr=0.0004)
+        self.scheduler = torch.optim.lr_scheduler.CosineAnnealingWarmRestarts(
+            self.optimizer,
+            10,
+            T_mult=2
+        )
 
         self.dataset = FSC_Dataset(
-            "/home/rutayisire/unimore/cv/md-scanner/fsc-dataset/dataset.csv",
-            "/home/rutayisire/unimore/cv/md-scanner/fsc-dataset",
+            FSC_DATASET_CSV,
+            FSC_DATASET_DIR,
             epoch_dim=EPOCH_DIM * BATCH_SIZE
             )
         self.dataset_loader = DataLoader(self.dataset, batch_size=BATCH_SIZE)
@@ -83,10 +94,10 @@ class Trainer:
         latest_filename = path.join(checkpoint_dir, "latest.pt")
         
         if not path.exists(latest_filename):
-            print("Latest checkpoint not found:", latest_filename)
+            print("Latest checkpoint not found:", latest_filename, flush=True)
             return False
 
-        print("Loading latest checkpoint:", latest_filename)
+        print("Loading latest checkpoint:", latest_filename, flush=True)
 
         checkpoint = torch.load(latest_filename)
 
@@ -127,14 +138,13 @@ class Trainer:
                 self.running_loss = 0.0
                 self.running_loss_iter = 0
 
-                lr = self.optimizer.param_groups[0]['lr']
+                lr = self.scheduler.get_last_lr()
 
                 elapsed_time = time.time() - self.started_at
-                print(f'TRA - Epoch: {self.epoch}, Iter: {self.iter}, Loss: {self.loss}, LR: {lr}, Elapsed time: {elapsed_time:.2f}')
-
-                self.last_log_time = time.time()
+                print(f'TRA - Epoch: {self.epoch}, Iter: {self.iter}, Loss: {self.loss}, LR: {lr}, Elapsed time: {elapsed_time:.2f}', flush=True)
 
             self.iter += 1
+        self.scheduler.step()
 
         return self.loss
 
@@ -185,7 +195,7 @@ class Trainer:
         sf_mean_dist /= num_validation_iters
         df_mean_dist /= num_validation_iters
 
-        print(f"VAL - Num iters: {num_validation_iters}, SF sum: {sf_mean_dist:.3f}, DF sum: {df_mean_dist:.3f}")
+        print(f"VAL - Num iters: {num_validation_iters}, SF sum: {sf_mean_dist:.3f}, DF sum: {df_mean_dist:.3f}", flush=True)
 
 
     def save_checkpoint(self):
@@ -212,15 +222,15 @@ class Trainer:
             os.remove(latest_file)
         os.symlink(checkpoint_file, path.abspath(latest_file))
 
-        print(f"CHK - Saved checkpoint: {checkpoint_filename}")
+        print(f"CHK - Saved checkpoint: {checkpoint_filename}", flush=True)
 
 
     def train(self):
-        print(f"Running training, batch size: {BATCH_SIZE}...")
+        print(f"Running training, batch size: {BATCH_SIZE}...", flush=True)
 
         while True:
             print(f"-" * 96)
-            print(f"EPOCH {self.epoch} (dim: {EPOCH_DIM})")
+            print(f"EPOCH {self.epoch} (dim: {EPOCH_DIM})", flush=True)
             print(f"-" * 96)
             
             self.run_train_one_epoch()
@@ -231,7 +241,7 @@ class Trainer:
 
 
 if __name__ == "__main__":
-    print(f"Pytorch CUDA Version is: {torch.version.cuda}")
+    print(f"Pytorch CUDA Version is: {torch.version.cuda}", flush=True)
 
     model = FSC_Encoder()
 

@@ -91,7 +91,7 @@ def show_dataset_sampling(dataset):
 # ------------------------------------------------------------------------------------------------
 
 
-FSC_DATASET_DIR = "/home/rutayisire/unimore/cv/md-scanner/fsc-dataset"
+FSC_DATASET_DIR = "/work/cvcs_2023_group28/dataset-retriever/font-style-classifier/dataset"
 FSC_DATASET_CSV = path.join(FSC_DATASET_DIR, "dataset.csv")
 
 
