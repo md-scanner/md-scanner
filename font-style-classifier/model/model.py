@@ -8,15 +8,82 @@ from torch.nn import functional as F
 # - https://datahacker.rs/019-siamese-network-in-pytorch-with-application-to-face-similarity/
 
 
-
 def count_learnable_params(model: nn.Module) -> int:
     return sum(param.numel() for param in model.parameters() if param.requires_grad)
 
 
-class FSC_Encoder(nn.Module):
+# ------------------------------------------------------------------------------------------------
+# V1 Network
+# ------------------------------------------------------------------------------------------------
+
+
+class V1Net(nn.Module):
+    def __init__(self):
+        super(V1Net, self).__init__()
+
+        self.cnn = nn.Sequential(
+            # 32x32:1
+            nn.Conv2d(in_channels=1, out_channels=256, kernel_size=3, padding="same"),
+            nn.ReLU(),
+            nn.Conv2d(in_channels=256, out_channels=256, kernel_size=3, padding="same"),
+            nn.ReLU(),
+            nn.Conv2d(in_channels=256, out_channels=256, kernel_size=3, padding="same"),
+            nn.ReLU(),
+            nn.MaxPool2d((2, 2)),
+            # 16x16:256
+            nn.Conv2d(in_channels=256, out_channels=512, kernel_size=3, padding="same"),
+            nn.ReLU(),
+            nn.Conv2d(in_channels=512, out_channels=512, kernel_size=3, padding="same"),
+            nn.ReLU(),
+            nn.Conv2d(in_channels=512, out_channels=512, kernel_size=3, padding="same"),
+            nn.ReLU(),
+            nn.Conv2d(in_channels=512, out_channels=512, kernel_size=3, padding="same"),
+            nn.ReLU(),
+            nn.MaxPool2d((2, 2)),
+            # 8x8:512
+            nn.Conv2d(in_channels=512, out_channels=512, kernel_size=3, padding="same"),
+            nn.ReLU(),
+            nn.Conv2d(in_channels=512, out_channels=512, kernel_size=3, padding="same"),
+            nn.ReLU(),
+            nn.Conv2d(in_channels=512, out_channels=512, kernel_size=3, padding="same"),
+            nn.ReLU(),
+            nn.Conv2d(in_channels=512, out_channels=512, kernel_size=3, padding="same"),
+            nn.ReLU(),
+            nn.MaxPool2d((2, 2)),
+            # 4x4:512
+        )
+
+        self.fc = nn.Sequential(
+            nn.Linear(in_features=4 * 4 * 512, out_features=4096),
+            nn.Linear(in_features=4096, out_features=4096),
+            nn.Linear(in_features=4096, out_features=4096),
+            nn.Linear(in_features=4096, out_features=1024),
+        )
+
+    
+    def forward(self, x):
+        x = self.cnn(x)
+        x = torch.flatten(x, start_dim=1)
+        x = self.fc(x)
+        return x
+    
+
+    def load_checkpoint(self, checkpoint):
+        if type(checkpoint) == str:
+            checkpoint = torch.load(checkpoint)
+
+        self.load_state_dict(checkpoint['model_state_dict'])
+
+
+# ------------------------------------------------------------------------------------------------
+# SmallFCN Network
+# ------------------------------------------------------------------------------------------------
+
+
+class SmallFcnNet(nn.Module):
     def __init__(self):
         super(FSC_Encoder, self).__init__()
-        
+
         self.cnn = nn.Sequential(
             # 32x32:1
             nn.Conv2d(in_channels=1, out_channels=128, kernel_size=3, padding="same"),
@@ -67,15 +134,17 @@ class FSC_Encoder(nn.Module):
         x = torch.flatten(x, start_dim=1)
         x = self.fc(x)
         return x
-
+    
 
     def load_checkpoint(self, checkpoint):
-        """ Loads the given checkpoint onto the model. The checkpoint can be either a file or a loaded checkpoint. """
-
         if type(checkpoint) == str:
             checkpoint = torch.load(checkpoint)
 
         self.load_state_dict(checkpoint['model_state_dict'])
+
+
+#FSC_Encoder = V1Net
+FSC_Encoder = SmallFcnNet
 
 
 if __name__ == "__main__":
@@ -89,6 +158,4 @@ if __name__ == "__main__":
     
     y = model(x)
     print("y:", y.shape)
-
-
 

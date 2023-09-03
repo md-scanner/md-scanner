@@ -33,6 +33,8 @@ def run_inference(model: FSC_Encoder):
     
     font = dataset.pick_random_font()
 
+    print(f"Random font: {font}")
+
     _, axs = plt.subplots(2, 1, figsize=(15, 8))
 
     sf_results = []
@@ -73,6 +75,6 @@ if __name__ == "__main__":
     model.load_checkpoint(checkpoint)
     model.eval()
 
-    print(f"Inference...")
-    run_inference(model)
+    while True:
+        run_inference(model)
 

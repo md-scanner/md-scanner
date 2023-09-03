@@ -19,7 +19,7 @@ FSC_DATASET_DIR="/home/rutayisire/unimore/cv/md-scanner/fsc-dataset/"
 
 print("Loading the model...")
 model = FSC_Encoder()
-model.load_checkpoint("/home/rutayisire/projects/dataset-retriever/font-style-classifier/model/latest-checkpoint.pt")
+model.load_checkpoint("/home/rutayisire/projects/dataset-retriever/font-style-classifier/model/latest-checkpoint-smallfcn.pt")
 model = model.cuda()
 
 print("Initializing the DB...")
