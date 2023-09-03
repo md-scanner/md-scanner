@@ -61,11 +61,10 @@ class Trainer:
 
         self.loss_fn = ContrastiveLoss()
         
-        self.optimizer = torch.optim.Adam(self.model.parameters(), lr=0.0004)
-        self.scheduler = torch.optim.lr_scheduler.CosineAnnealingWarmRestarts(
+        self.optimizer = torch.optim.Adam(self.model.parameters(), lr=0.0001)
+        self.scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(
             self.optimizer,
-            10,
-            T_mult=2
+            50,
         )
 
         self.dataset = FSC_Dataset(
