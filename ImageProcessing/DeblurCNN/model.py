@@ -53,16 +53,9 @@ class DeblurCNN(nn.Module):
             nn.ReLU(),
         )
 
-        self.fc = nn.Sequential(
-            # (2200, 1700, 3)
-            nn.Linear(in_features=2200 * 1700 * 3, out_features=1024),
-        )
-
     
     def forward(self, x):
         x = self.cnn(x)
-        x = torch.flatten(x, start_dim=1)
-        x = self.fc(x)
         return x
 
 
