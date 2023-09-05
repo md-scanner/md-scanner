@@ -1,11 +1,11 @@
 import random
 import cv2 as cv
 import pandas as pd
+import torch
 import torchvision.transforms.functional as F
 import os
 from os import path
-
-from prepare_input import prepare_input
+from prepare_input import binarize_doc_image, adapt_char_image_size
 
 
 script_dir = path.dirname(path.realpath(__file__))
@@ -18,25 +18,15 @@ class TestDocument:
         self.box_file = box_file
 
         self._load_image_file()
-        self._binarize_image()
+        self.bin_img = binarize_doc_image(self.img)
 
         self._load_box_file()
 
 
     def _load_image_file(self):
-        self.img = cv.imread(self.img_file, cv.IMREAD_GRAYSCALE)
-
-
-    def _binarize_image(self):
-        _, bin_img = cv.threshold(self.img, 0, 255, cv.THRESH_BINARY + cv.THRESH_OTSU)
-    
-        num_white_pixels = (bin_img == 255).sum()
-        num_black_pixels = (bin_img.shape[0] * bin_img.shape[1]) - num_white_pixels
-
-        if num_white_pixels < num_black_pixels:  # Invert, we want the background to be white!
-            bin_img = 255 - bin_img
-
-        self.bin_img = bin_img
+        img = cv.imread(self.img_file, cv.IMREAD_GRAYSCALE)
+        img = F.to_tensor(img)
+        self.img = img
 
 
     def _load_box_file(self):
@@ -56,7 +46,7 @@ class TestDocument:
             if row['char'] not in "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789":
                 continue
 
-            h, _ = self.img.shape
+            _, h, _ = self.img.shape
 
             top = h - int(row['top'])
             bottom = h - int(row['bottom'])
@@ -74,7 +64,7 @@ class TestDocument:
         bin_char_img = self.bin_img[top:bottom, left:right]
         bin_char_img = F.to_tensor(bin_char_img)
 
-        prep_char_img = prepare_input(bin_char_img)
+        prep_char_img = adapt_char_image_size(bin_char_img)
 
         return char_img, bin_char_img, prep_char_img, row
 

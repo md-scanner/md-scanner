@@ -264,8 +264,8 @@ class VeryTinyNet(nn.Module):
 
 #FSC_Encoder = V1Net
 #FSC_Encoder = SmallNet
-#FSC_Encoder = TinyNet
-FSC_Encoder = VeryTinyNet
+FSC_Encoder = TinyNet
+#FSC_Encoder = VeryTinyNet
 
 
 if __name__ == "__main__":

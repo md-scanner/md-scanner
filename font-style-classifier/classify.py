@@ -16,10 +16,11 @@ FSC_DB_COLLECTION_NAME="embeddings"
 
 FSC_DATASET_CSV="/home/rutayisire/unimore/cv/md-scanner/fsc-dataset/dataset.csv"
 FSC_DATASET_DIR="/home/rutayisire/unimore/cv/md-scanner/fsc-dataset/"
+FSC_CHECKPOINT_FILE="/home/rutayisire/projects/dataset-retriever/font-style-classifier/model/latest-checkpoint-tiny.pt"
 
 print("Loading the model...")
 model = FSC_Encoder()
-model.load_checkpoint("/home/rutayisire/projects/dataset-retriever/font-style-classifier/model/latest-checkpoint-smallfcn.pt")
+model.load_checkpoint(FSC_CHECKPOINT_FILE)
 model = model.cuda()
 
 print("Initializing the DB...")
@@ -52,15 +53,18 @@ class ClassifyFontStyle:
     def _find_nearest_fonts(self):
         self.nearest_fonts = []
         for embedding in self.embeddings:
-            nn = db_client.search(
+            query_result = db_client.search(
                 collection_name=FSC_DB_COLLECTION_NAME,
                 query_vector=embedding.tolist(),
                 with_vectors=True,
-                limit=100
+                limit=10
                 )
             
-            # TODO 
-            self.nearest_fonts.append(nn[0].payload['font'])
+            near_fonts = [entry.payload['font'] for entry in query_result]
+            nearest_font = max(set(near_fonts), key=near_fonts.count)
+            #print(f"Nearest font: {nearest_font}, Count: {near_fonts.count(nearest_font)}")
+
+            self.nearest_fonts.append(nearest_font)
 
 
     def _load_dataset_image(self, filename: str):
@@ -81,37 +85,44 @@ class ClassifyFontStyle:
             # Given the nearest font, load the (regular, italic, bold) versions of the character
             q = q[(q['font'] == nearest_font) & (q['char'] == char)]
 
+            # We don't have that char in the dataset (e.g. it's a special character such as '-_")
+            if q.empty:
+                self.styled_chars.append(None)
+                continue
+
             regular_df = q[(~q['is_italic']) & (~q['is_bold'])]  # Regular (not italic nor bold)
             italic_df = q[q['is_italic']]
             bold_df = q[q['is_bold']]
 
-            regular_img = None
-            if not regular_df.empty:
-                regular_img = self._load_dataset_image(
-                    path.join(FSC_DATASET_DIR, regular_df.iloc[0]['filename'])
-                    )
-            
-            italic_img = None
-            if not italic_df.empty:
-                italic_img = self._load_dataset_image(
-                    path.join(FSC_DATASET_DIR, italic_df.iloc[0]['filename'])
-                    )
+            # IMPORTANT: the DB must only have fonts with all regular, italic and bold styles
+            assert not regular_df.empty
+            assert not italic_df.empty
+            assert not bold_df.empty
 
-            bold_img = None
-            if not bold_df.empty:
-                bold_img = self._load_dataset_image(
-                    path.join(FSC_DATASET_DIR, bold_df.iloc[0]['filename'])
-                    )
+            regular_img = self._load_dataset_image(
+                path.join(FSC_DATASET_DIR, regular_df.iloc[0]['filename'])
+                )
+            
+            italic_img = self._load_dataset_image(
+                path.join(FSC_DATASET_DIR, italic_df.iloc[0]['filename'])
+                )
+
+            bold_img = self._load_dataset_image(
+                path.join(FSC_DATASET_DIR, bold_df.iloc[0]['filename'])
+                )
 
             self.styled_chars.append((regular_img, italic_img, bold_img))
     
 
     def _classify(self):
-        original = torch.stack([entry[0] for entry in self.char_list])
+        # List of indices of the characters that can be classified (i.e. that have a regular/italic/bold version found in the dataset)
+        classifiable_indices = [i for i, entry in enumerate(self.styled_chars) if entry != None]
 
-        regular = torch.stack([entry[0] for entry in self.styled_chars])
-        bold = torch.stack([entry[1] for entry in self.styled_chars])
-        italic = torch.stack([entry[2] for entry in self.styled_chars])
+        original = torch.stack([self.char_list[i][0] for i in classifiable_indices])
+        
+        regular = torch.stack([self.styled_chars[i][0] for i in classifiable_indices])
+        bold = torch.stack([self.styled_chars[i][1] for i in classifiable_indices])
+        italic = torch.stack([self.styled_chars[i][2] for i in classifiable_indices])
 
         t = torch.stack([original, regular, bold, italic])
         t = torch.swapaxes(t, 0, 1)
@@ -123,7 +134,11 @@ class ClassifyFontStyle:
         d = torch.sum(torch.abs(a - b), dim=(2,3,4))
         # d.shape: (B, 3)
 
-        self.style_indices = torch.argmin(d, dim=1)  # (B,)
+        nearest_indices = torch.argmin(d, dim=1).tolist()  # (B,)
+        
+        self.style_indices = [None] * self.batch_size
+        for i, style_idx in enumerate(nearest_indices):
+            self.style_indices[classifiable_indices[i]] = style_idx
 
 
     def __call__(self):
@@ -151,6 +166,8 @@ class ClassifyFontStyle:
         dt = time.time() - st
         print(f"DT: {dt:.3f}")
 
+        self.result = self.style_indices
+
         print("Done!")
 
 
@@ -165,10 +182,10 @@ if __name__ == "__main__":
     # Show the sampled document
     fig, axs = plt.subplots(1, 2)
 
-    axs[0].imshow(test_doc.img, cmap='gray', vmin=0, vmax=255)
+    axs[0].imshow(test_doc.img.permute(2, 1, 0), cmap='gray', vmin=0, vmax=255)
     axs[0].axis('off')
 
-    axs[1].imshow(test_doc.bin_img, cmap='gray', vmin=0, vmax=255)
+    axs[1].imshow(test_doc.bin_img.permute(2, 1, 0), cmap='gray', vmin=0, vmax=255)
     axs[1].axis('off')
 
     plt.show()
@@ -199,13 +216,13 @@ if __name__ == "__main__":
         for \
             (char_img, char), \
             nearest_font, \
-            (regular_img, italic_img, bold_img) \
+            styled_images \
         in zip(char_list, classify.nearest_fonts, classify.styled_chars):
             grid += [
                 char_img,
-                regular_img if regular_img != None else torch.zeros((1, 32, 32)),
-                italic_img if italic_img != None else torch.zeros((1, 32, 32)),
-                bold_img if bold_img != None else torch.zeros((1, 32, 32)),
+                styled_images[0] if styled_images != None else torch.zeros((1, 32, 32)),
+                styled_images[1] if styled_images != None else torch.zeros((1, 32, 32)),
+                styled_images[2] if styled_images != None else torch.zeros((1, 32, 32)),
                 ]
         dt = time.time() - st
         print(f"Created display grid; dt: {dt:.3f}")

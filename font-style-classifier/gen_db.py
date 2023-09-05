@@ -15,6 +15,7 @@ FSC_DB_COLLECTION_NAME="embeddings"
 
 FSC_DATASET_CSV="/home/rutayisire/unimore/cv/md-scanner/fsc-dataset/dataset.csv"
 FSC_DATASET_DIR="/home/rutayisire/unimore/cv/md-scanner/fsc-dataset"
+FSC_CHECKPOINT_FILE="/home/rutayisire/projects/dataset-retriever/font-style-classifier/model/latest-checkpoint-tiny.pt"
 
 
 input("This action will fresh and regenerate the FSC_Database. Press any key to proceed...")
@@ -32,7 +33,7 @@ db_client.recreate_collection(
 # Load the model and initialize it to the latest training checkpoint
 print("Loading the model...")
 model = FSC_Encoder()
-model.load_checkpoint("./model/latest-checkpoint.pt")
+model.load_checkpoint(FSC_CHECKPOINT_FILE)
 model = model.cuda()
 
 # For every dataset sample, run an inference and save the embedding to the DB
@@ -112,7 +113,7 @@ class DbGenerator:
 
         print("Filling DB...")
 
-        for i, row in self.df.iterrows():
+        for _, row in self.df.iterrows():
             img_path = os.path.join(FSC_DATASET_DIR, row["filename"])
             img = Image.open(img_path)
             img = F.to_tensor(img)
