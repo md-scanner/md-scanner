@@ -19,12 +19,15 @@ transform = transforms.Compose([
     transforms.ToTensor(),
 ])
 
+# call dataset_generator.py to generate the dataset
+os.system("python dataset_generator.py")
+
 # Create instances of your custom dataset
 train_dataset = DeblurDataset("dataset/", transform=transform)
 train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
 
 # Define your neural network model (e.g., DeblurCNN)
-model = DeblurCNN()
+model = DeblurCNN().cuda()
 
 # Define loss function (e.g., Mean Squared Error)
 criterion = nn.MSELoss()
@@ -40,7 +43,7 @@ for epoch in range(num_epochs):
         optimizer.zero_grad()
 
         # Forward pass
-        outputs = model(blurred_images)
+        outputs = model(blurred_images.cuda())
 
         # Calculate the loss
         loss = criterion(outputs, sharp_images)
