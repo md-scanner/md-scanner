@@ -76,11 +76,11 @@ class V1Net(nn.Module):
 
 
 # ------------------------------------------------------------------------------------------------
-# SmallFCN Network
+# Small Network
 # ------------------------------------------------------------------------------------------------
 
 
-class SmallFcnNet(nn.Module):
+class SmallNet(nn.Module):
     def __init__(self):
         super(FSC_Encoder, self).__init__()
 
@@ -142,9 +142,130 @@ class SmallFcnNet(nn.Module):
 
         self.load_state_dict(checkpoint['model_state_dict'])
 
+# ------------------------------------------------------------------------------------------------
+# Tiny Network
+# ------------------------------------------------------------------------------------------------
+
+
+class TinyNet(nn.Module):
+    def __init__(self):
+        super(FSC_Encoder, self).__init__()
+
+        self.cnn = nn.Sequential(
+            # 32x32:1
+            nn.Conv2d(in_channels=1, out_channels=64, kernel_size=3, padding="same"),
+            nn.ReLU(),
+            nn.Conv2d(in_channels=64, out_channels=64, kernel_size=3, padding="same"),
+            nn.ReLU(),
+            nn.Conv2d(in_channels=64, out_channels=64, kernel_size=3, padding="same"),
+            nn.ReLU(),
+            nn.MaxPool2d((2, 2)),
+            # 16x16:64
+            nn.Conv2d(in_channels=64, out_channels=128, kernel_size=3, padding="same"),
+            nn.ReLU(),
+            nn.Conv2d(in_channels=128, out_channels=128, kernel_size=3, padding="same"),
+            nn.ReLU(),
+            nn.Conv2d(in_channels=128, out_channels=128, kernel_size=3, padding="same"),
+            nn.ReLU(),
+            nn.MaxPool2d((2, 2)),
+            # 8x8:128
+            nn.Conv2d(in_channels=128, out_channels=256, kernel_size=3, padding="same"),
+            nn.ReLU(),
+            nn.Conv2d(in_channels=256, out_channels=256, kernel_size=3, padding="same"),
+            nn.ReLU(),
+            nn.Conv2d(in_channels=256, out_channels=256, kernel_size=3, padding="same"),
+            nn.ReLU(),
+            nn.MaxPool2d((2, 2)),
+            # 4x4:256
+        )
+
+        self.fc = nn.Sequential(
+            nn.Linear(in_features=4096, out_features=4096),
+            nn.ReLU(),
+            nn.Linear(in_features=4096, out_features=4096),
+            nn.ReLU(),
+            nn.Linear(in_features=4096, out_features=1024),
+        )
+
+    
+    def forward(self, x):
+        x = self.cnn(x)
+        x = torch.flatten(x, start_dim=1)
+        x = self.fc(x)
+        return x
+    
+
+    def load_checkpoint(self, checkpoint):
+        if type(checkpoint) == str:
+            checkpoint = torch.load(checkpoint)
+
+        self.load_state_dict(checkpoint['model_state_dict'])
+
+
+# ------------------------------------------------------------------------------------------------
+# Very Tiny Network
+# ------------------------------------------------------------------------------------------------
+
+
+class VeryTinyNet(nn.Module):
+    def __init__(self):
+        super(FSC_Encoder, self).__init__()
+
+        self.cnn = nn.Sequential(
+            # 32x32:1
+            nn.Conv2d(in_channels=1, out_channels=64, kernel_size=3, padding="same"),
+            nn.ReLU(),
+            nn.Conv2d(in_channels=64, out_channels=64, kernel_size=3, padding="same"),
+            nn.ReLU(),
+            nn.Conv2d(in_channels=64, out_channels=64, kernel_size=3, padding="same"),
+            nn.ReLU(),
+            nn.MaxPool2d((2, 2)),
+            # 16x16:64
+            nn.Conv2d(in_channels=64, out_channels=128, kernel_size=3, padding="same"),
+            nn.ReLU(),
+            nn.Conv2d(in_channels=128, out_channels=128, kernel_size=3, padding="same"),
+            nn.ReLU(),
+            nn.Conv2d(in_channels=128, out_channels=128, kernel_size=3, padding="same"),
+            nn.ReLU(),
+            nn.MaxPool2d((2, 2)),
+            # 8x8:128
+            nn.Conv2d(in_channels=128, out_channels=256, kernel_size=3, padding="same"),
+            nn.ReLU(),
+            nn.Conv2d(in_channels=256, out_channels=256, kernel_size=3, padding="same"),
+            nn.ReLU(),
+            nn.Conv2d(in_channels=256, out_channels=256, kernel_size=3, padding="same"),
+            nn.ReLU(),
+            nn.MaxPool2d((2, 2)),
+            # 4x4:256
+        )
+
+        self.fc = nn.Sequential(
+            nn.Linear(in_features=4096, out_features=2048),
+            nn.ReLU(),
+            nn.Linear(in_features=2048, out_features=2048),
+            nn.ReLU(),
+            nn.Linear(in_features=2048, out_features=1024),
+        )
+
+    
+    def forward(self, x):
+        x = self.cnn(x)
+        x = torch.flatten(x, start_dim=1)
+        x = self.fc(x)
+        return x
+    
+
+    def load_checkpoint(self, checkpoint):
+        if type(checkpoint) == str:
+            checkpoint = torch.load(checkpoint)
+
+        self.load_state_dict(checkpoint['model_state_dict'])
+
 
 #FSC_Encoder = V1Net
-FSC_Encoder = SmallFcnNet
+#FSC_Encoder = SmallNet
+#FSC_Encoder = TinyNet
+FSC_Encoder = VeryTinyNet
 
 
 if __name__ == "__main__":
@@ -155,7 +276,10 @@ if __name__ == "__main__":
 
     x = torch.randn(1, 1, 32, 32)
     print("x:", x.shape)
-    
+    from time import time
+
+    start = time()
     y = model(x)
+    print(time()-start)
     print("y:", y.shape)
 
