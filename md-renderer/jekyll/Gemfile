@@ -1,0 +1,10 @@
+source 'https://rubygems.org'
+
+gem "jekyll"
+
+# Github pages themes
+gem "github-pages", group: :jekyll_plugins
+
+# Has to be added or jekyll serve will fail:
+# https://github.com/jekyll/jekyll/issues/8523
+gem "webrick"
