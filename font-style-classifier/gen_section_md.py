@@ -201,20 +201,45 @@ class SectionMdGenerator:
 
 
     def _write_md(self):
-        for word, style_idx in self.md_pre_output:
+        words = []
+        style_idx = -1
+
+
+        def write_batch():
+            nonlocal words, style_idx
+
+            words_str = ' '.join(words)
+
             # Regular
             if style_idx == 0:
-                self.out_stream.write(word)
+                self.out_stream.write(words_str)
             # Italic
             elif style_idx == 1:
-                self.out_stream.write(f"*{word}*")
+                self.out_stream.write(f"*{words_str}*")
             # Bold
             elif style_idx == 2:
-                self.out_stream.write(f"**{word}**")
+                self.out_stream.write(f"**{words_str}**")
             # The fuck (?)
             else:
                 raise ValueError(f"Unknown style index for \"{word}\": {style_idx}")
+            
             self.out_stream.write(" ")
+            
+            words = []
+            style_idx = -1
+
+
+        for word, word_style_idx in self.md_pre_output:
+            if style_idx == -1:
+                style_idx = word_style_idx
+            elif style_idx != word_style_idx:
+                write_batch()
+                style_idx = word_style_idx
+
+            words.append(word)
+
+
+        write_batch()
         self.out_stream.write("\n")
 
 
