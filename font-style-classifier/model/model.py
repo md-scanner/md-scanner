@@ -263,8 +263,8 @@ class VeryTinyNet(nn.Module):
 
 
 #FSC_Encoder = V1Net
-#FSC_Encoder = SmallNet
-FSC_Encoder = TinyNet
+FSC_Encoder = SmallNet
+#FSC_Encoder = TinyNet
 #FSC_Encoder = VeryTinyNet
 
 

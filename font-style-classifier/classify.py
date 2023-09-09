@@ -11,12 +11,12 @@ import time
 import test_env
 
 
-FSC_DB_PATH="/home/rutayisire/projects/dataset-retriever/font-style-classifier/.fsc-db"
+FSC_DB_PATH="/home/carmine/gits/dataset-retriever/font-style-classifier/.fsc-db"
 FSC_DB_COLLECTION_NAME="embeddings"
 
-FSC_DATASET_CSV="/home/rutayisire/unimore/cv/md-scanner/fsc-dataset/dataset.csv"
-FSC_DATASET_DIR="/home/rutayisire/unimore/cv/md-scanner/fsc-dataset/"
-FSC_CHECKPOINT_FILE="/home/rutayisire/projects/dataset-retriever/font-style-classifier/model/latest-checkpoint-tiny.pt"
+FSC_DATASET_CSV="/home/carmine/gits/dataset-retriever/font-style-classifier/dataset/dataset.csv"
+FSC_DATASET_DIR="/home/carmine/gits/dataset-retriever/font-style-classifier/dataset/"
+FSC_CHECKPOINT_FILE="/home/carmine/gits/dataset-retriever/font-style-classifier/checkpoint-20230904150346.pt"
 
 print("Loading the model...")
 model = FSC_Encoder()
