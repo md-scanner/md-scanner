@@ -22,7 +22,7 @@ def fill_axis(ax, results):
         ax.add_patch(plt.Rectangle((32 * i, 0), 32, 32, fill=False, edgecolor='gray', linewidth=1))
         ax.add_patch(plt.Rectangle((32 * i, 32), 32, 32, fill=False, edgecolor='gray', linewidth=1))
         ax.margins(0.001)
-        ax.text(32 * i + 16, 32, f"{rows[2][i]:.3f}", ha='center', va='center', c='blue', backgroundcolor='white')
+        ax.text(32 * i + 16, 32, f"{rows[2][i]:.3f}", ha='center', va='center', c='blue', backgroundcolor='white', fontsize=24)
 
 
 def run_inference(model: FSC_Encoder):
