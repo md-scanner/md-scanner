@@ -6,7 +6,7 @@ MD-Scanner is a Computer Vision Pipeline that generate accurate Markdown files f
 
 ## Repository Contents
 
-This repository contains all of the code we wrote for the MarkDown Scanner, except for some Section Classification-specific code. Those things are in [this repository](https://github.com/md-scanner/unilm).
+This repository contains all of the code we wrote for the MarkDown Scanner, except for some Section Classification-specific code. Those things are in [this repository](https://github.com/md-scanner/unilm). There you can also find the [`pipeline.py` file](https://github.com/md-scanner/unilm/blob/master/dit/pipeline.py) running the whole pipeline except the preprocessing step.
 
 For dataset generation, there a lot of shell scripts (some are Bash-specific, some others are not) meant to run on UNIX-like environments.
 
