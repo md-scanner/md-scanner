@@ -2,7 +2,7 @@
 
 ## Pre-setup
 
-This Font Style Classifier component strongly relies on [google/fonts](https://github.com/google/fonts) repository. 
+The Font Style Classifier component strongly relies on [google/fonts](https://github.com/google/fonts) repository. 
 
 Clone repository anywhere on your machine:
 ```
@@ -28,7 +28,7 @@ export FSC_DATASET_DIR=              # The path to the dataset folder
 
 This script is used to generate the dataset on which we train the FSC model and that we use to fill the database for retrieval.
 
-**The dataset is required for most of the following tasks.**
+**The dataset is required for most of the scripts.**
 
 ```
 cd model
@@ -39,7 +39,7 @@ python3 dataset-generator.py
 
 This script is used to generate the database on which retrieval is performed.
 
-**The database is required for most of the following tasks.**
+**The database is required for most of the scripts.**
 
 **NOTE: This script will fresh any existing DB.**
 
