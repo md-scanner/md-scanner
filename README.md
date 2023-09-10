@@ -1,6 +1,12 @@
 # MD Scanner Code Monorepo
 
-This repository contains all of the code we wrote for the MarkDown Scanner.
+MD-Scanner is a Computer Vision Pipeline that generate accurate Markdown files from document images. Notably, it performs better than Meta AI's [Nougat](https://facebookresearch.github.io/nougat/).
+
+![](usvsfb.jpg)
+
+## Repository Contents
+
+This repository contains all of the code we wrote for the MarkDown Scanner, except for some Section Classification-specific code. Those things are in [this repository](https://github.com/md-scanner/unilm).
 
 For dataset generation, there a lot of shell scripts (some are Bash-specific, some others are not) meant to run on UNIX-like environments.
 
