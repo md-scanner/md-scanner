@@ -1,6 +1,6 @@
 # MD Scanner Code Monorepo
 
-MD-Scanner is a Computer Vision Pipeline that generate accurate Markdown files from document images. Notably, it performs better than Meta AI's [Nougat](https://facebookresearch.github.io/nougat/).
+MD-Scanner is a Computer Vision Pipeline that generate accurate Markdown files from document images. Notably, it seems to performs better than Meta AI's [Nougat](https://facebookresearch.github.io/nougat/).
 
 ![](usvsfb.jpg)
 
