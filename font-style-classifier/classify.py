@@ -14,17 +14,25 @@ import test_env
 FSC_DB_PATH="/home/carmine/gits/dataset-retriever/font-style-classifier/.fsc-db"
 FSC_DB_COLLECTION_NAME="embeddings"
 
+<<<<<<< HEAD
 FSC_DATASET_CSV="/home/carmine/gits/dataset-retriever/font-style-classifier/dataset/dataset.csv"
 FSC_DATASET_DIR="/home/carmine/gits/dataset-retriever/font-style-classifier/dataset/"
 FSC_CHECKPOINT_FILE="/home/carmine/gits/dataset-retriever/font-style-classifier/checkpoint-20230904150346.pt"
+=======
+FSC_DATASET_CSV="/home/rutayisire/unimore/cv/md-scanner/fsc-dataset/dataset.csv"
+FSC_DATASET_DIR="/home/rutayisire/unimore/cv/md-scanner/fsc-dataset/"
+FSC_CHECKPOINT_FILE="/home/rutayisire/projects/dataset-retriever/font-style-classifier/model/latest-checkpoint-verytiny.pt"
+>>>>>>> 17480e0 (fsc: Minor updates)
 
 print("Loading the model...")
 model = FSC_Encoder()
 model.load_checkpoint(FSC_CHECKPOINT_FILE)
 model = model.cuda()
 
-print("Initializing the DB...")
+print("Initializing the DB... ", end="")
 db_client = QdrantClient(path=FSC_DB_PATH)
+el_count = db_client.count(collection_name=FSC_DB_COLLECTION_NAME).count
+print(f"Elements: {el_count}")
 
 print("Init done!")
 
@@ -142,33 +150,35 @@ class ClassifyFontStyle:
 
 
     def __call__(self):
-        print(f"Calculating embeddings...; Batch size: {self.batch_size}, ", end="")
+        #print(f"Calculating embeddings...; Batch size: {self.batch_size}, ", end="")
         st = time.time()
         self._calc_embeddings()
         dt = time.time() - st
-        print(f"DT: {dt:.3f}")
+        #print(f"DT: {dt:.3f}")
 
-        print(f"Searching for NN...; Batch size: {self.batch_size}, ", end="")
+        #print(f"Searching for NN...; Batch size: {self.batch_size}, ", end="")
         st = time.time()
         self._find_nearest_fonts()
         dt = time.time() - st
-        print(f"DT: {dt:.3f}")
+        #print(f"DT: {dt:.3f}")
 
-        print(f"Loading styled characters...; Batch size: {self.batch_size}, ", end="")
+        #print(f"Loading styled characters...; Batch size: {self.batch_size}, ", end="")
         st = time.time()
         self._load_styled_chars()
         dt = time.time() - st
-        print(f"DT: {dt:.3f}")
+        #print(f"DT: {dt:.3f}")
 
-        print(f"Performing style classification...; Batch size: {self.batch_size}, ", end="")
+        #print(f"Performing style classification...; Batch size: {self.batch_size}, ", end="")
         st = time.time()
         self._classify()
         dt = time.time() - st
-        print(f"DT: {dt:.3f}")
+        #print(f"DT: {dt:.3f}")
 
         self.result = self.style_indices
 
-        print("Done!")
+        #print("Done!")
+
+        return self.result
 
 
 # ------------------------------------------------------------------------------------------------

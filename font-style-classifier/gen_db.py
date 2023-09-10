@@ -13,9 +13,15 @@ import torch
 FSC_DB_PATH="./.fsc-db"
 FSC_DB_COLLECTION_NAME="embeddings"
 
+<<<<<<< HEAD
 FSC_DATASET_CSV="dataset/dataset.csv"
 FSC_DATASET_DIR="dataset"
 FSC_CHECKPOINT_FILE="checkpoint-20230904150346.pt"
+=======
+FSC_DATASET_CSV="/home/rutayisire/unimore/cv/md-scanner/fsc-dataset/dataset.csv"
+FSC_DATASET_DIR="/home/rutayisire/unimore/cv/md-scanner/fsc-dataset"
+FSC_CHECKPOINT_FILE="/home/rutayisire/projects/dataset-retriever/font-style-classifier/model/latest-checkpoint-verytiny.pt"
+>>>>>>> 17480e0 (fsc: Minor updates)
 
 
 input("This action will fresh and regenerate the FSC_Database. Press any key to proceed...")
@@ -101,7 +107,8 @@ class DbGenerator:
         print(f"DB insertion: {dt:.3f} (count: {el_count}), ", end="")
 
         # Done!
-        print("Done!")
+        filling_dt = time.time() - self.filling_started_at
+        print(f"Done! {filling_dt:.3f}")
 
         self.cur_batch = []
         self.cur_batch_id += 1
@@ -112,6 +119,8 @@ class DbGenerator:
         self.cur_batch_id = 0
 
         print("Filling DB...")
+
+        self.filling_started_at = time.time()
 
         for _, row in self.df.iterrows():
             img_path = os.path.join(FSC_DATASET_DIR, row["filename"])
