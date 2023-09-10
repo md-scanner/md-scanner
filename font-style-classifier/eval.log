@@ -1,0 +1,922 @@
+------------------------------------------------------------------------------------------------
+V1Net
+------------------------------------------------------------------------------------------------
+Loading the model...
+Initializing the DB... Elements: 26288
+Init done!
+------------------------------------------------------------------------------------------------
+Regular word classification
+------------------------------------------------------------------------------------------------
+[eval] Processed 21/1000 words...
+	TP: 6
+	TN: 9
+	FP: 2
+	FN: 4
+	Precision: 0.750
+	Recall: 0.600
+	F1-score: 0.667
+[eval] Processed 41/1000 words...
+	TP: 11
+	TN: 17
+	FP: 2
+	FN: 11
+	Precision: 0.846
+	Recall: 0.500
+	F1-score: 0.629
+[eval] Processed 62/1000 words...
+	TP: 19
+	TN: 23
+	FP: 2
+	FN: 18
+	Precision: 0.905
+	Recall: 0.514
+	F1-score: 0.655
+[eval] Processed 82/1000 words...
+	TP: 23
+	TN: 33
+	FP: 3
+	FN: 23
+	Precision: 0.885
+	Recall: 0.500
+	F1-score: 0.639
+[eval] Processed 100/1000 words...
+	TP: 26
+	TN: 41
+	FP: 4
+	FN: 29
+	Precision: 0.867
+	Recall: 0.473
+	F1-score: 0.612
+[eval] Processed 122/1000 words...
+	TP: 29
+	TN: 51
+	FP: 6
+	FN: 36
+	Precision: 0.829
+	Recall: 0.446
+	F1-score: 0.580
+[eval] Processed 143/1000 words...
+	TP: 35
+	TN: 60
+	FP: 7
+	FN: 41
+	Precision: 0.833
+	Recall: 0.461
+	F1-score: 0.593
+[eval] Processed 162/1000 words...
+	TP: 35
+	TN: 71
+	FP: 8
+	FN: 48
+	Precision: 0.814
+	Recall: 0.422
+	F1-score: 0.556
+[eval] Processed 182/1000 words...
+	TP: 40
+	TN: 80
+	FP: 10
+	FN: 52
+	Precision: 0.800
+	Recall: 0.435
+	F1-score: 0.563
+[eval] Processed 201/1000 words...
+	TP: 44
+	TN: 90
+	FP: 10
+	FN: 57
+	Precision: 0.815
+	Recall: 0.436
+	F1-score: 0.568
+[eval] Processed 220/1000 words...
+	TP: 48
+	TN: 99
+	FP: 10
+	FN: 63
+	Precision: 0.828
+	Recall: 0.432
+	F1-score: 0.568
+[eval] Processed 239/1000 words...
+	TP: 52
+	TN: 110
+	FP: 10
+	FN: 67
+	Precision: 0.839
+	Recall: 0.437
+	F1-score: 0.575
+[eval] Processed 258/1000 words...
+	TP: 57
+	TN: 119
+	FP: 11
+	FN: 71
+	Precision: 0.838
+	Recall: 0.445
+	F1-score: 0.582
+[eval] Processed 276/1000 words...
+	TP: 64
+	TN: 128
+	FP: 11
+	FN: 73
+	Precision: 0.853
+	Recall: 0.467
+	F1-score: 0.604
+[eval] Processed 296/1000 words...
+	TP: 68
+	TN: 137
+	FP: 13
+	FN: 78
+	Precision: 0.840
+	Recall: 0.466
+	F1-score: 0.599
+[eval] Processed 315/1000 words...
+	TP: 70
+	TN: 147
+	FP: 14
+	FN: 84
+	Precision: 0.833
+	Recall: 0.455
+	F1-score: 0.588
+[eval] Processed 335/1000 words...
+	TP: 74
+	TN: 158
+	FP: 17
+	FN: 86
+	Precision: 0.813
+	Recall: 0.463
+	F1-score: 0.590
+ERROR: Character not found; Char: "z", Word: "zoilist", Font: khmer, Picked style: (False, False)
+ERROR: Character not found; Char: "o", Word: "zoilist", Font: khmer, Picked style: (False, False)
+ERROR: Character not found; Char: "i", Word: "zoilist", Font: khmer, Picked style: (False, False)
+ERROR: Character not found; Char: "l", Word: "zoilist", Font: khmer, Picked style: (False, False)
+ERROR: Character not found; Char: "i", Word: "zoilist", Font: khmer, Picked style: (False, False)
+ERROR: Character not found; Char: "s", Word: "zoilist", Font: khmer, Picked style: (False, False)
+ERROR: Character not found; Char: "t", Word: "zoilist", Font: khmer, Picked style: (False, False)
+Traceback (most recent call last):
+  File "/home/rutayisire/projects/dataset-retriever/font-style-classifier/eval_word.py", line 180, in <module>
+  File "/home/rutayisire/projects/dataset-retriever/font-style-classifier/eval_word.py", line 158, in main
+    
+  File "/home/rutayisire/projects/dataset-retriever/font-style-classifier/eval_word.py", line 110, in eval_word_classification
+    
+  File "<__array_function__ internals>", line 200, in argmax
+  File "/home/rutayisire/projects/dataset-retriever/.venv/lib/python3.11/site-packages/numpy/core/fromnumeric.py", line 1242, in argmax
+    return _wrapfunc(a, 'argmax', axis=axis, out=out, **kwds)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/rutayisire/projects/dataset-retriever/.venv/lib/python3.11/site-packages/numpy/core/fromnumeric.py", line 57, in _wrapfunc
+    return bound(*args, **kwds)
+           ^^^^^^^^^^^^^^^^^^^^
+ValueError: attempt to get argmax of an empty sequence
+------------------------------------------------------------------------------------------------
+SmallNet
+------------------------------------------------------------------------------------------------
+Loading the model...
+Initializing the DB... Elements: 26288
+Init done!
+------------------------------------------------------------------------------------------------
+Regular char classification
+------------------------------------------------------------------------------------------------
+[eval] Processed 128/10000 samples...
+	TP: 44
+	TN: 46
+	FP: 22
+	FN: 16
+	Precision: 0.667
+	Recall: 0.733
+	F1-score: 0.698
+[eval] Processed 256/10000 samples...
+	TP: 86
+	TN: 90
+	FP: 42
+	FN: 38
+	Precision: 0.672
+	Recall: 0.694
+	F1-score: 0.683
+[eval] Processed 384/10000 samples...
+	TP: 126
+	TN: 133
+	FP: 66
+	FN: 59
+	Precision: 0.656
+	Recall: 0.681
+	F1-score: 0.668
+[eval] Processed 512/10000 samples...
+	TP: 169
+	TN: 172
+	FP: 88
+	FN: 83
+	Precision: 0.658
+	Recall: 0.671
+	F1-score: 0.664
+[eval] Processed 640/10000 samples...
+	TP: 202
+	TN: 214
+	FP: 109
+	FN: 115
+	Precision: 0.650
+	Recall: 0.637
+	F1-score: 0.643
+[eval] Processed 768/10000 samples...
+	TP: 238
+	TN: 260
+	FP: 129
+	FN: 141
+	Precision: 0.649
+	Recall: 0.628
+	F1-score: 0.638
+[eval] Processed 896/10000 samples...
+	TP: 271
+	TN: 312
+	FP: 143
+	FN: 170
+	Precision: 0.655
+	Recall: 0.615
+	F1-score: 0.634
+[eval] Processed 1024/10000 samples...
+	TP: 316
+	TN: 349
+	FP: 168
+	FN: 191
+	Precision: 0.653
+	Recall: 0.623
+	F1-score: 0.638
+[eval] Processed 1152/10000 samples...
+	TP: 357
+	TN: 399
+	FP: 184
+	FN: 212
+	Precision: 0.660
+	Recall: 0.627
+	F1-score: 0.643
+[eval] Processed 1280/10000 samples...
+	TP: 397
+	TN: 447
+	FP: 205
+	FN: 231
+	Precision: 0.659
+	Recall: 0.632
+	F1-score: 0.646
+[eval] Processed 1408/10000 samples...
+	TP: 433
+	TN: 495
+	FP: 224
+	FN: 256
+	Precision: 0.659
+	Recall: 0.628
+	F1-score: 0.643
+[eval] Processed 1536/10000 samples...
+	TP: 470
+	TN: 536
+	FP: 246
+	FN: 284
+	Precision: 0.656
+	Recall: 0.623
+	F1-score: 0.639
+[eval] Processed 1664/10000 samples...
+	TP: 512
+	TN: 582
+	FP: 258
+	FN: 312
+	Precision: 0.665
+	Recall: 0.621
+	F1-score: 0.642
+[eval] Processed 1792/10000 samples...
+	TP: 560
+	TN: 620
+	FP: 273
+	FN: 339
+	Precision: 0.672
+	Recall: 0.623
+	F1-score: 0.647
+[eval] Processed 1920/10000 samples...
+	TP: 600
+	TN: 667
+	FP: 294
+	FN: 359
+	Precision: 0.671
+	Recall: 0.626
+	F1-score: 0.648
+[eval] Processed 2048/10000 samples...
+	TP: 650
+	TN: 708
+	FP: 309
+	FN: 381
+	Precision: 0.678
+	Recall: 0.630
+	F1-score: 0.653
+[eval] Processed 2176/10000 samples...
+	TP: 687
+	TN: 747
+	FP: 327
+	FN: 415
+	Precision: 0.678
+	Recall: 0.623
+	F1-score: 0.649
+[eval] Processed 2304/10000 samples...
+	TP: 725
+	TN: 782
+	FP: 355
+	FN: 442
+	Precision: 0.671
+	Recall: 0.621
+	F1-score: 0.645
+[eval] Processed 2432/10000 samples...
+	TP: 757
+	TN: 825
+	FP: 380
+	FN: 470
+	Precision: 0.666
+	Recall: 0.617
+	F1-score: 0.640
+[eval] Processed 2560/10000 samples...
+	TP: 788
+	TN: 870
+	FP: 402
+	FN: 500
+	Precision: 0.662
+	Recall: 0.612
+	F1-score: 0.636
+[eval] Processed 2688/10000 samples...
+	TP: 819
+	TN: 921
+	FP: 424
+	FN: 524
+	Precision: 0.659
+	Recall: 0.610
+	F1-score: 0.633
+[eval] Processed 2816/10000 samples...
+	TP: 858
+	TN: 967
+	FP: 441
+	FN: 550
+	Precision: 0.661
+	Recall: 0.609
+	F1-score: 0.634
+[eval] Processed 2944/10000 samples...
+	TP: 893
+	TN: 1016
+	FP: 459
+	FN: 576
+	Precision: 0.661
+	Recall: 0.608
+	F1-score: 0.633
+[eval] Processed 3072/10000 samples...
+	TP: 940
+	TN: 1058
+	FP: 483
+	FN: 591
+	Precision: 0.661
+	Recall: 0.614
+	F1-score: 0.636
+[eval] Processed 3200/10000 samples...
+	TP: 979
+	TN: 1102
+	FP: 502
+	FN: 617
+	Precision: 0.661
+	Recall: 0.613
+	F1-score: 0.636
+[eval] Processed 3328/10000 samples...
+	TP: 1024
+	TN: 1142
+	FP: 517
+	FN: 645
+	Precision: 0.665
+	Recall: 0.614
+	F1-score: 0.638
+[eval] Processed 3456/10000 samples...
+	TP: 1061
+	TN: 1189
+	FP: 533
+	FN: 673
+	Precision: 0.666
+	Recall: 0.612
+	F1-score: 0.638
+[eval] Processed 3584/10000 samples...
+	TP: 1095
+	TN: 1240
+	FP: 550
+	FN: 699
+	Precision: 0.666
+	Recall: 0.610
+	F1-score: 0.637
+[eval] Processed 3712/10000 samples...
+	TP: 1126
+	TN: 1283
+	FP: 574
+	FN: 729
+	Precision: 0.662
+	Recall: 0.607
+	F1-score: 0.633
+[eval] Processed 3840/10000 samples...
+	TP: 1168
+	TN: 1323
+	FP: 602
+	FN: 747
+	Precision: 0.660
+	Recall: 0.610
+	F1-score: 0.634
+[eval] Processed 3968/10000 samples...
+	TP: 1208
+	TN: 1368
+	FP: 628
+	FN: 764
+	Precision: 0.658
+	Recall: 0.613
+	F1-score: 0.634
+[eval] Processed 4096/10000 samples...
+	TP: 1243
+	TN: 1420
+	FP: 643
+	FN: 790
+	Precision: 0.659
+	Recall: 0.611
+	F1-score: 0.634
+[eval] Processed 4224/10000 samples...
+	TP: 1272
+	TN: 1461
+	FP: 667
+	FN: 824
+	Precision: 0.656
+	Recall: 0.607
+	F1-score: 0.630
+[eval] Processed 4352/10000 samples...
+	TP: 1308
+	TN: 1513
+	FP: 682
+	FN: 849
+	Precision: 0.657
+	Recall: 0.606
+	F1-score: 0.631
+[eval] Processed 4480/10000 samples...
+	TP: 1355
+	TN: 1556
+	FP: 694
+	FN: 875
+	Precision: 0.661
+	Recall: 0.608
+	F1-score: 0.633
+[eval] Processed 4608/10000 samples...
+	TP: 1397
+	TN: 1599
+	FP: 714
+	FN: 898
+	Precision: 0.662
+	Recall: 0.609
+	F1-score: 0.634
+[eval] Processed 4736/10000 samples...
+	TP: 1435
+	TN: 1657
+	FP: 726
+	FN: 918
+	Precision: 0.664
+	Recall: 0.610
+	F1-score: 0.636
+[eval] Processed 4864/10000 samples...
+	TP: 1482
+	TN: 1704
+	FP: 740
+	FN: 938
+	Precision: 0.667
+	Recall: 0.612
+	F1-score: 0.639
+[eval] Processed 4992/10000 samples...
+	TP: 1514
+	TN: 1747
+	FP: 763
+	FN: 968
+	Precision: 0.665
+	Recall: 0.610
+	F1-score: 0.636
+[eval] Processed 5120/10000 samples...
+	TP: 1556
+	TN: 1795
+	FP: 775
+	FN: 994
+	Precision: 0.668
+	Recall: 0.610
+	F1-score: 0.638
+[eval] Processed 5248/10000 samples...
+	TP: 1597
+	TN: 1841
+	FP: 800
+	FN: 1010
+	Precision: 0.666
+	Recall: 0.613
+	F1-score: 0.638
+[eval] Processed 5376/10000 samples...
+	TP: 1628
+	TN: 1888
+	FP: 821
+	FN: 1039
+	Precision: 0.665
+	Recall: 0.610
+	F1-score: 0.636
+[eval] Processed 5504/10000 samples...
+	TP: 1674
+	TN: 1927
+	FP: 834
+	FN: 1069
+	Precision: 0.667
+	Recall: 0.610
+	F1-score: 0.638
+[eval] Processed 5632/10000 samples...
+	TP: 1718
+	TN: 1970
+	FP: 853
+	FN: 1091
+	Precision: 0.668
+	Recall: 0.612
+	F1-score: 0.639
+[eval] Processed 5760/10000 samples...
+	TP: 1765
+	TN: 2010
+	FP: 872
+	FN: 1113
+	Precision: 0.669
+	Recall: 0.613
+	F1-score: 0.640
+[eval] Processed 5888/10000 samples...
+	TP: 1803
+	TN: 2050
+	FP: 892
+	FN: 1143
+	Precision: 0.669
+	Recall: 0.612
+	F1-score: 0.639
+[eval] Processed 6016/10000 samples...
+	TP: 1845
+	TN: 2085
+	FP: 914
+	FN: 1172
+	Precision: 0.669
+	Recall: 0.612
+	F1-score: 0.639
+[eval] Processed 6144/10000 samples...
+	TP: 1881
+	TN: 2124
+	FP: 936
+	FN: 1203
+	Precision: 0.668
+	Recall: 0.610
+	F1-score: 0.638
+[eval] Processed 6272/10000 samples...
+	TP: 1917
+	TN: 2164
+	FP: 962
+	FN: 1229
+	Precision: 0.666
+	Recall: 0.609
+	F1-score: 0.636
+[eval] Processed 6400/10000 samples...
+	TP: 1947
+	TN: 2218
+	FP: 985
+	FN: 1250
+	Precision: 0.664
+	Recall: 0.609
+	F1-score: 0.635
+[eval] Processed 6528/10000 samples...
+	TP: 1986
+	TN: 2260
+	FP: 1010
+	FN: 1272
+	Precision: 0.663
+	Recall: 0.610
+	F1-score: 0.635
+[eval] Processed 6656/10000 samples...
+	TP: 2029
+	TN: 2302
+	FP: 1038
+	FN: 1287
+	Precision: 0.662
+	Recall: 0.612
+	F1-score: 0.636
+[eval] Processed 6784/10000 samples...
+	TP: 2089
+	TN: 2334
+	FP: 1051
+	FN: 1310
+	Precision: 0.665
+	Recall: 0.615
+	F1-score: 0.639
+[eval] Processed 6912/10000 samples...
+	TP: 2129
+	TN: 2383
+	FP: 1064
+	FN: 1336
+	Precision: 0.667
+	Recall: 0.614
+	F1-score: 0.640
+[eval] Processed 7040/10000 samples...
+	TP: 2170
+	TN: 2425
+	FP: 1082
+	FN: 1363
+	Precision: 0.667
+	Recall: 0.614
+	F1-score: 0.640
+[eval] Processed 7168/10000 samples...
+	TP: 2211
+	TN: 2472
+	FP: 1101
+	FN: 1384
+	Precision: 0.668
+	Recall: 0.615
+	F1-score: 0.640
+[eval] Processed 7296/10000 samples...
+	TP: 2250
+	TN: 2514
+	FP: 1126
+	FN: 1406
+	Precision: 0.666
+	Recall: 0.615
+	F1-score: 0.640
+[eval] Processed 7424/10000 samples...
+	TP: 2297
+	TN: 2556
+	FP: 1145
+	FN: 1426
+	Precision: 0.667
+	Recall: 0.617
+	F1-score: 0.641
+[eval] Processed 7552/10000 samples...
+	TP: 2333
+	TN: 2599
+	FP: 1166
+	FN: 1454
+	Precision: 0.667
+	Recall: 0.616
+	F1-score: 0.640
+[eval] Processed 7680/10000 samples...
+	TP: 2378
+	TN: 2640
+	FP: 1182
+	FN: 1480
+	Precision: 0.668
+	Recall: 0.616
+	F1-score: 0.641
+[eval] Processed 7808/10000 samples...
+	TP: 2416
+	TN: 2684
+	FP: 1199
+	FN: 1509
+	Precision: 0.668
+	Recall: 0.616
+	F1-score: 0.641
+[eval] Processed 7936/10000 samples...
+	TP: 2458
+	TN: 2726
+	FP: 1217
+	FN: 1535
+	Precision: 0.669
+	Recall: 0.616
+	F1-score: 0.641
+[eval] Processed 8064/10000 samples...
+	TP: 2500
+	TN: 2776
+	FP: 1234
+	FN: 1554
+	Precision: 0.670
+	Recall: 0.617
+	F1-score: 0.642
+[eval] Processed 8192/10000 samples...
+	TP: 2526
+	TN: 2826
+	FP: 1252
+	FN: 1588
+	Precision: 0.669
+	Recall: 0.614
+	F1-score: 0.640
+[eval] Processed 8320/10000 samples...
+	TP: 2564
+	TN: 2875
+	FP: 1277
+	FN: 1604
+	Precision: 0.668
+	Recall: 0.615
+	F1-score: 0.640
+[eval] Processed 8448/10000 samples...
+	TP: 2600
+	TN: 2919
+	FP: 1294
+	FN: 1635
+	Precision: 0.668
+	Recall: 0.614
+	F1-score: 0.640
+[eval] Processed 8576/10000 samples...
+	TP: 2632
+	TN: 2963
+	FP: 1323
+	FN: 1658
+	Precision: 0.665
+	Recall: 0.614
+	F1-score: 0.638
+[eval] Processed 8704/10000 samples...
+	TP: 2662
+	TN: 3007
+	FP: 1350
+	FN: 1685
+	Precision: 0.664
+	Recall: 0.612
+	F1-score: 0.637
+[eval] Processed 8832/10000 samples...
+	TP: 2707
+	TN: 3053
+	FP: 1369
+	FN: 1703
+	Precision: 0.664
+	Recall: 0.614
+	F1-score: 0.638
+[eval] Processed 8960/10000 samples...
+	TP: 2744
+	TN: 3096
+	FP: 1390
+	FN: 1730
+	Precision: 0.664
+	Recall: 0.613
+	F1-score: 0.638
+[eval] Processed 9088/10000 samples...
+	TP: 2790
+	TN: 3142
+	FP: 1406
+	FN: 1750
+	Precision: 0.665
+	Recall: 0.615
+	F1-score: 0.639
+[eval] Processed 9216/10000 samples...
+	TP: 2832
+	TN: 3189
+	FP: 1426
+	FN: 1769
+	Precision: 0.665
+	Recall: 0.616
+	F1-score: 0.639
+[eval] Processed 9344/10000 samples...
+	TP: 2877
+	TN: 3229
+	FP: 1447
+	FN: 1791
+	Precision: 0.665
+	Recall: 0.616
+	F1-score: 0.640
+[eval] Processed 9472/10000 samples...
+	TP: 2921
+	TN: 3266
+	FP: 1470
+	FN: 1815
+	Precision: 0.665
+	Recall: 0.617
+	F1-score: 0.640
+[eval] Processed 9600/10000 samples...
+	TP: 2962
+	TN: 3311
+	FP: 1492
+	FN: 1835
+	Precision: 0.665
+	Recall: 0.617
+	F1-score: 0.640
+[eval] Processed 9728/10000 samples...
+	TP: 2981
+	TN: 3370
+	FP: 1520
+	FN: 1857
+	Precision: 0.662
+	Recall: 0.616
+	F1-score: 0.638
+[eval] Processed 9856/10000 samples...
+	TP: 3014
+	TN: 3424
+	FP: 1536
+	FN: 1882
+	Precision: 0.662
+	Recall: 0.616
+	F1-score: 0.638
+[eval] Processed 9984/10000 samples...
+	TP: 3052
+	TN: 3470
+	FP: 1556
+	FN: 1906
+	Precision: 0.662
+	Recall: 0.616
+	F1-score: 0.638
+[eval] Processed 10000/10000 samples...
+	TP: 3055
+	TN: 3481
+	FP: 1557
+	FN: 1907
+	Precision: 0.662
+	Recall: 0.616
+	F1-score: 0.638
+------------------------------------------------------------------------------------------------
+Italic char classification
+------------------------------------------------------------------------------------------------
+[eval] Processed 128/10000 samples...
+	TP: 26
+	TN: 50
+	FP: 19
+	FN: 33
+	Precision: 0.578
+	Recall: 0.441
+	F1-score: 0.500
+[eval] Processed 256/10000 samples...
+	TP: 71
+	TN: 95
+	FP: 35
+	FN: 55
+	Precision: 0.670
+	Recall: 0.563
+	F1-score: 0.612
+[eval] Processed 384/10000 samples...
+	TP: 115
+	TN: 149
+	FP: 42
+	FN: 78
+	Precision: 0.732
+	Recall: 0.596
+	F1-score: 0.657
+[eval] Processed 512/10000 samples...
+	TP: 157
+	TN: 197
+	FP: 55
+	FN: 103
+	Precision: 0.741
+	Recall: 0.604
+	F1-score: 0.665
+[eval] Processed 640/10000 samples...
+	TP: 201
+	TN: 240
+	FP: 69
+	FN: 130
+	Precision: 0.744
+	Recall: 0.607
+	F1-score: 0.669
+[eval] Processed 768/10000 samples...
+	TP: 246
+	TN: 292
+	FP: 86
+	FN: 144
+	Precision: 0.741
+	Recall: 0.631
+	F1-score: 0.681
+[eval] Processed 896/10000 samples...
+	TP: 289
+	TN: 344
+	FP: 97
+	FN: 166
+	Precision: 0.749
+	Recall: 0.635
+	F1-score: 0.687
+[eval] Processed 1024/10000 samples...
+	TP: 326
+	TN: 387
+	FP: 113
+	FN: 198
+	Precision: 0.743
+	Recall: 0.622
+	F1-score: 0.677
+[eval] Processed 1152/10000 samples...
+	TP: 365
+	TN: 439
+	FP: 129
+	FN: 219
+	Precision: 0.739
+	Recall: 0.625
+	F1-score: 0.677
+[eval] Processed 1280/10000 samples...
+	TP: 403
+	TN: 491
+	FP: 140
+	FN: 246
+	Precision: 0.742
+	Recall: 0.621
+	F1-score: 0.676
+[eval] Processed 1408/10000 samples...
+	TP: 439
+	TN: 537
+	FP: 160
+	FN: 272
+	Precision: 0.733
+	Recall: 0.617
+	F1-score: 0.670
+[eval] Processed 1536/10000 samples...
+	TP: 483
+	TN: 577
+	FP: 172
+	FN: 304
+	Precision: 0.737
+	Recall: 0.614
+	F1-score: 0.670
+[eval] Processed 1664/10000 samples...
+	TP: 523
+	TN: 629
+	FP: 189
+	FN: 323
+	Precision: 0.735
+	Recall: 0.618
+	F1-score: 0.671
+[eval] Processed 1792/10000 samples...
+	TP: 569
+	TN: 674
+	FP: 204
+	FN: 345
+	Precision: 0.736
+	Recall: 0.623
+	F1-score: 0.675

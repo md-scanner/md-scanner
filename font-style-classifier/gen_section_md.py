@@ -197,6 +197,10 @@ class SectionMdGenerator:
 
             # Keep the style that got the maximum vote among all the characters
             max_voted_style_idx = max(set(word_style_indices), key=word_style_indices.count)
+
+            # TODO QUICK FIX
+            max_voted_style_idx = max_voted_style_idx if max_voted_style_idx is None else max_voted_style_idx
+
             self.md_pre_output.append((word_txt, max_voted_style_idx,))
 
 

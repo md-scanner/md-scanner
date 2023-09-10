@@ -1,7 +1,6 @@
 import random
 import cv2 as cv
 import pandas as pd
-import torch
 import torchvision.transforms.functional as F
 import os
 from os import path

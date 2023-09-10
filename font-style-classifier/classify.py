@@ -9,29 +9,17 @@ from os import path
 from PIL import Image
 import time
 import test_env
+from os import environ as env
 
-
-FSC_DB_PATH="/home/carmine/gits/dataset-retriever/font-style-classifier/.fsc-db"
-FSC_DB_COLLECTION_NAME="embeddings"
-
-<<<<<<< HEAD
-FSC_DATASET_CSV="/home/carmine/gits/dataset-retriever/font-style-classifier/dataset/dataset.csv"
-FSC_DATASET_DIR="/home/carmine/gits/dataset-retriever/font-style-classifier/dataset/"
-FSC_CHECKPOINT_FILE="/home/carmine/gits/dataset-retriever/font-style-classifier/checkpoint-20230904150346.pt"
-=======
-FSC_DATASET_CSV="/home/rutayisire/unimore/cv/md-scanner/fsc-dataset/dataset.csv"
-FSC_DATASET_DIR="/home/rutayisire/unimore/cv/md-scanner/fsc-dataset/"
-FSC_CHECKPOINT_FILE="/home/rutayisire/projects/dataset-retriever/font-style-classifier/model/latest-checkpoint-verytiny.pt"
->>>>>>> 17480e0 (fsc: Minor updates)
 
 print("Loading the model...")
 model = FSC_Encoder()
-model.load_checkpoint(FSC_CHECKPOINT_FILE)
+model.load_checkpoint(env['FSC_ENCODER_CHECKPOINT_PATH'])
 model = model.cuda()
 
 print("Initializing the DB... ", end="")
-db_client = QdrantClient(path=FSC_DB_PATH)
-el_count = db_client.count(collection_name=FSC_DB_COLLECTION_NAME).count
+db_client = QdrantClient(path=env['FSC_DB_PATH'])
+el_count = db_client.count(collection_name=env['FSC_DB_COLLECTION_NAME']).count
 print(f"Elements: {el_count}")
 
 print("Init done!")
@@ -51,7 +39,7 @@ class ClassifyFontStyle:
         self.model_input = torch.stack([char_img for char_img, _ in self.char_list])
         self.model_input = self.model_input.cuda()
 
-        self.dataset = pd.read_csv(FSC_DATASET_CSV)
+        self.dataset = pd.read_csv(env['FSC_DATASET_CSV_PATH'])
 
 
     def _calc_embeddings(self):
@@ -62,7 +50,7 @@ class ClassifyFontStyle:
         self.nearest_fonts = []
         for embedding in self.embeddings:
             query_result = db_client.search(
-                collection_name=FSC_DB_COLLECTION_NAME,
+                collection_name=env['FSC_DB_COLLECTION_NAME'],
                 query_vector=embedding.tolist(),
                 with_vectors=True,
                 limit=10
@@ -76,7 +64,7 @@ class ClassifyFontStyle:
 
 
     def _load_dataset_image(self, filename: str):
-        img_path = path.join(FSC_DATASET_DIR, filename)
+        img_path = path.join(env['FSC_DATASET_DIR'], filename)
         img = Image.open(img_path)
     
         t = F.to_tensor(img)
@@ -108,15 +96,15 @@ class ClassifyFontStyle:
             assert not bold_df.empty
 
             regular_img = self._load_dataset_image(
-                path.join(FSC_DATASET_DIR, regular_df.iloc[0]['filename'])
+                path.join(env['FSC_DATASET_DIR'], regular_df.iloc[0]['filename'])
                 )
             
             italic_img = self._load_dataset_image(
-                path.join(FSC_DATASET_DIR, italic_df.iloc[0]['filename'])
+                path.join(env['FSC_DATASET_DIR'], italic_df.iloc[0]['filename'])
                 )
 
             bold_img = self._load_dataset_image(
-                path.join(FSC_DATASET_DIR, bold_df.iloc[0]['filename'])
+                path.join(env['FSC_DATASET_DIR'], bold_df.iloc[0]['filename'])
                 )
 
             self.styled_chars.append((regular_img, italic_img, bold_img))

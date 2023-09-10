@@ -1,35 +1,28 @@
-import os
-import time
 import random
 import pandas as pd
 from os import path
 from classify import ClassifyFontStyle
 from torchvision.io import read_image
-from torchvision.utils import save_image
 import numpy as np
 import torch
+import sys
+from os import environ as env
 
 
-FSC_DB_PATH="./.fsc-db"
-FSC_DB_COLLECTION_NAME="embeddings"
-
-FSC_DATASET_CSV="/home/rutayisire/unimore/cv/md-scanner/fsc-dataset/dataset.csv"
-FSC_DATASET_DIR="/home/rutayisire/unimore/cv/md-scanner/fsc-dataset"
-
-dataset = pd.read_csv(FSC_DATASET_CSV)
+dataset = pd.read_csv(env['FSC_DATASET_CSV_PATH'])
 
 
-def _get_style_idx(italic: bool, bold: bool) -> int:
+def _filter_dataset(is_italic: bool, is_bold: bool):
+    return dataset[(dataset['is_italic'] == is_italic) & (dataset['is_bold'] == is_bold)]
+
+
+def _encode_style(italic: bool, bold: bool) -> int:
     if italic: # Italic
         return 1
     elif bold: # Bold
         return 2
     else: # Regular
         return 0
-    
-
-def _filter_dataset(is_italic: bool, is_bold: bool):
-    return dataset[(dataset['is_italic'] == is_italic) & (dataset['is_bold'] == is_bold)]
 
 
 def _decode_style(style: int) -> bool:
@@ -40,6 +33,13 @@ def _decode_style(style: int) -> bool:
         (True, False),  # Italic
         (False, True)   # Bold
     ][style]
+
+
+def _calc_precision_recall_f1(tp, tn, fp, fn) -> float:
+    p = tp / (tp + fp)
+    r = tp / (tp + fn)
+    f1 = 2 * (p * r) / (p + r)
+    return p, r, f1
 
 
 def eval_style_classification(style: int):
@@ -55,7 +55,8 @@ def eval_style_classification(style: int):
 
         for _ in range(0, min(BATCH_SIZE, NUM_SAMPLES - i)):
             # Pick a character belonging to the given `style` with a 50% probability
-            if round(random.random()) >= 0.5:
+            pick_same_style = round(random.random()) >= 0.5
+            if pick_same_style:
                 picked_style = _decode_style(style)  # Pick the same style
             else:
                 picked_style = _decode_style(int(style + random.random() + 1) % 3)  # Pick another style
@@ -63,15 +64,13 @@ def eval_style_classification(style: int):
             # Query for a random character from the dataset
             sample_char = _filter_dataset(*picked_style).sample().iloc[0]
             
-            sample_img_path = path.join(FSC_DATASET_DIR, sample_char["filename"])
-            sample_img = read_image(sample_img_path)
-            sample_img = sample_img.type(torch.FloatTensor)    # convert to FloatTensor
-
-            save_image(sample_img, "/tmp/sample.png")
+            sample_img_path = path.join(env['FSC_DATASET_DIR'], sample_char["filename"])
+            sample_img = read_image(sample_img_path)  # Load a ByteTensor
+            sample_img = sample_img.type(torch.FloatTensor) / 255.0  # Convert to FloatTensor
 
             # Fill up the batch
             batch += [(sample_img, sample_char["char"])]
-            ground_truth += [_get_style_idx(sample_char["is_italic"], sample_char["is_bold"])]
+            ground_truth += [_encode_style(sample_char["is_italic"], sample_char["is_bold"])]
         
         i += len(batch)
 
@@ -91,8 +90,7 @@ def eval_style_classification(style: int):
         else:
             break
 
-        p = tp / (tp + fp)
-        r = tp / (tp + fn)
+        p, r, f1 = _calc_precision_recall_f1(tp, tn, fp, fn)
 
         print(f"[eval] Processed {i}/{NUM_SAMPLES} samples...")
         print(f"\tTP: {tp}")
@@ -101,25 +99,44 @@ def eval_style_classification(style: int):
         print(f"\tFN: {fn}")
         print(f"\tPrecision: {p:.3f}")
         print(f"\tRecall: {r:.3f}")
-        print(f"\tF1-score: {2 * (p * r) / (p + r):.3f}")
+        print(f"\tF1-score: {f1:.3f}")
+
+    return tp, tn, fp, fn
+
+
+def main():
+    if len(sys.argv) != 2:
+        print(f"Invalid syntax: {sys.argv[0]} <out-csv>")
+        sys.exit(1)
+
+    with open(sys.argv[1], "w") as out_csv_file:
+        out_csv_file.write(f"Style, TP, TN, FP, FN, Precision, Recall, F1-score\n")
+
+        print(f"-" * 96)
+        print(f"Regular char classification")
+        print(f"-" * 96)
+
+        tp, tn, fp, fn = eval_style_classification(0)
+        p, r, f1 = _calc_precision_recall_f1(tp, tn, fp, fn)
+        out_csv_file.write(f"Regular, {tp}, {tn}, {fp}, {fn}, {p:.3f}, {r:.3f}, {f1:.3f}\n")
+
+        print(f"-" * 96)
+        print(f"Italic char classification")
+        print(f"-" * 96)
+
+        tp, tn, fp, fn = eval_style_classification(1)
+        p, r, f1 = _calc_precision_recall_f1(tp, tn, fp, fn)
+        out_csv_file.write(f"Italic, {tp}, {tn}, {fp}, {fn}, {p:.3f}, {r:.3f}, {f1:.3f}\n")
+
+        print(f"-" * 96)
+        print(f"Bold char classification")
+        print(f"-" * 96)
+
+        tp, tn, fp, fn = eval_style_classification(2)
+        p, r, f1 = _calc_precision_recall_f1(tp, tn, fp, fn)
+        out_csv_file.write(f"Bold, {tp}, {tn}, {fp}, {fn}, {p:.3f}, {r:.3f}, {f1:.3f}\n")
 
 
 if __name__ == "__main__":
-    print(f"-" * 96)
-    print(f"Regular classification evaluation")
-    print(f"-" * 96)
-
-    eval_style_classification(0)
-
-    print(f"-" * 96)
-    print(f"Italic classification evaluation")
-    print(f"-" * 96)
-
-    eval_style_classification(1)
-
-    print(f"-" * 96)
-    print(f"Bold classification evaluation")
-    print(f"-" * 96)
-
-    eval_style_classification(2)
+    main()
 

@@ -1,6 +1,7 @@
 import torch
 from torch import nn
 from torch.nn import functional as F
+from os import environ as env
 
 
 # References:
@@ -8,7 +9,7 @@ from torch.nn import functional as F
 # - https://datahacker.rs/019-siamese-network-in-pytorch-with-application-to-face-similarity/
 
 
-def count_learnable_params(model: nn.Module) -> int:
+def _count_learnable_params(model: nn.Module) -> int:
     return sum(param.numel() for param in model.parameters() if param.requires_grad)
 
 
@@ -263,14 +264,15 @@ class VeryTinyNet(nn.Module):
 
 
 #FSC_Encoder = V1Net
-FSC_Encoder = SmallNet
+#FSC_Encoder = SmallNet
 #FSC_Encoder = TinyNet
 #FSC_Encoder = VeryTinyNet
+FSC_Encoder = globals()[env['FSC_ENCODER_MODEL']]
 
 
 if __name__ == "__main__":
     model = FSC_Encoder()
-    print(f"Learnable params: CNN: {count_learnable_params(model.cnn)}, FC: {count_learnable_params(model.fc)}, Total: {count_learnable_params(model)}")
+    print(f"Learnable params: CNN: {_count_learnable_params(model.cnn)}, FC: {_count_learnable_params(model.fc)}, Total: {_count_learnable_params(model)}")
 
     print("Inference test:")
 

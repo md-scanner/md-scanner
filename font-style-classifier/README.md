@@ -16,7 +16,7 @@ git clone https://github.com/google/fonts/ <google-fonts-dir>
 Set the following env variables:
 ```
 FSC_DATASET_DIR=<dataset-dir>        # Where dataset images are saved
-FSC_DATASET_CSV=<dataset-csv>        # Where .csv is written (default: <dataset-dir>/dataset.csv)
+FSC_DATASET_CSV_PATH=<dataset-csv>   # Where .csv is written (default: <dataset-dir>/dataset.csv)
 GOOGLE_FONTS_DIR=<google-fonts-dir>  # Path to google/fonts repository
 ```
 

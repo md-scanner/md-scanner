@@ -1,3 +1,6 @@
 __pycache__
-.checkpoints*
-.fsc-db
+/.checkpoints*
+/.*-db
+/eval_results
+/model/latest-*
+/model/.checkpoints*

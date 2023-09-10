@@ -7,44 +7,23 @@ from PIL import Image
 import torchvision.transforms.functional as F
 import pandas as pd
 from model.model import FSC_Encoder
-
+from os import environ as env
 import torch
-
-FSC_DB_PATH="./.fsc-db"
-FSC_DB_COLLECTION_NAME="embeddings"
-
-<<<<<<< HEAD
-FSC_DATASET_CSV="dataset/dataset.csv"
-FSC_DATASET_DIR="dataset"
-FSC_CHECKPOINT_FILE="checkpoint-20230904150346.pt"
-=======
-FSC_DATASET_CSV="/home/rutayisire/unimore/cv/md-scanner/fsc-dataset/dataset.csv"
-FSC_DATASET_DIR="/home/rutayisire/unimore/cv/md-scanner/fsc-dataset"
-FSC_CHECKPOINT_FILE="/home/rutayisire/projects/dataset-retriever/font-style-classifier/model/latest-checkpoint-verytiny.pt"
->>>>>>> 17480e0 (fsc: Minor updates)
-
-
-input("This action will fresh and regenerate the FSC_Database. Press any key to proceed...")
+import sys
 
 
 print("Initializing the DB...")
-db_client = QdrantClient(path=FSC_DB_PATH) 
-
-db_client.recreate_collection(
-    collection_name=FSC_DB_COLLECTION_NAME,
-    vectors_config=VectorParams(size=1024, distance=Distance.DOT),
-    )
-
+db_client = QdrantClient(path=env['FSC_DB_PATH']) 
 
 # Load the model and initialize it to the latest training checkpoint
 print("Loading the model...")
 model = FSC_Encoder()
-model.load_checkpoint(FSC_CHECKPOINT_FILE)
+model.load_checkpoint(env['FSC_ENCODER_CHECKPOINT_PATH'])
 model = model.cuda()
 
 # For every dataset sample, run an inference and save the embedding to the DB
 print("Reading dataset index...")
-dataset = pd.read_csv(FSC_DATASET_CSV)
+dataset = pd.read_csv(env['FSC_DATASET_CSV_PATH'])
 dataset_length = len(dataset)
 
 BATCH_SIZE = 100
@@ -74,7 +53,7 @@ class DbGenerator:
 
     def _upsert_embeddings(self):
         db_client.upsert(
-            collection_name=FSC_DB_COLLECTION_NAME,
+            collection_name=env['FSC_DB_COLLECTION_NAME'],
             points=[
                 PointStruct(
                     id=random.getrandbits(64),
@@ -101,7 +80,7 @@ class DbGenerator:
         # Insert the embeddings into the DB
         st = time.time()
         self._upsert_embeddings()
-        el_count = db_client.count(collection_name=FSC_DB_COLLECTION_NAME).count
+        el_count = db_client.count(collection_name=env['FSC_DB_COLLECTION_NAME']).count
         dt = time.time() - st
 
         print(f"DB insertion: {dt:.3f} (count: {el_count}), ", end="")
@@ -123,7 +102,7 @@ class DbGenerator:
         self.filling_started_at = time.time()
 
         for _, row in self.df.iterrows():
-            img_path = os.path.join(FSC_DATASET_DIR, row["filename"])
+            img_path = os.path.join(env['FSC_DATASET_DIR'], row["filename"])
             img = Image.open(img_path)
             img = F.to_tensor(img)
 
@@ -136,6 +115,20 @@ class DbGenerator:
             self._upsert_batch()
 
 
-if __name__ == "__main__":
+def main():
+    proceed = '-f' in sys.argv
+    if not proceed:
+        input("This action will fresh and regenerate the FSC_Database. Press any key to proceed...")
+
+    # Recreate the collection (IMPORTANT: this will also delete old records!)
+    db_client.recreate_collection(
+        collection_name=env['FSC_DB_COLLECTION_NAME'],
+        vectors_config=VectorParams(size=1024, distance=Distance.DOT),
+        )
+    
     db_gen = DbGenerator()
     db_gen.fill_db()
+
+
+if __name__ == "__main__":
+    main()

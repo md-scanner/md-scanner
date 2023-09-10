@@ -51,7 +51,7 @@ TRAINING_LOG_DELAY = 5.0
 # checkpoint-20230831005021.pt
 
 FSC_DATASET_DIR = "/work/cvcs_2023_group28/dataset-retriever/font-style-classifier/dataset"
-FSC_DATASET_CSV = path.join(FSC_DATASET_DIR, "dataset.csv")
+FSC_DATASET_CSV_PATH = path.join(FSC_DATASET_DIR, "dataset.csv")
 
 
 class Trainer:
@@ -68,7 +68,7 @@ class Trainer:
         )
 
         self.dataset = FSC_Dataset(
-            FSC_DATASET_CSV,
+            FSC_DATASET_CSV_PATH,
             FSC_DATASET_DIR,
             epoch_dim=EPOCH_DIM * BATCH_SIZE
             )
