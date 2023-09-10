@@ -19,6 +19,7 @@ Other requirements are:
 * for the `bb-extractor`: CMake, a C++ toolchain, OpenCV and its development headers;
 * for `to-coco-format`: Python 3 and `pandas`
 
+**NOTE: You can find the latest training checkpoints for our models and the generated DB in the repository [releases](https://github.com/md-scanner/md-scanner/releases).**
 
 ## Steps to generate the dataset
 
