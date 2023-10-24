@@ -1,22 +1,25 @@
+from os import path
+import sys
+sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))  # To import common
+
 import random
 from torch.utils.data import Dataset
 from torchvision.transforms import v2
-from os import path
 from PIL import Image
 import matplotlib.pyplot as plt
 import pandas as pd
+from common import *
 
 # Reference:
 # https://pytorch.org/tutorials/beginner/data_loading_tutorial.html
 
-# ------------------------------------------------------------------------------------------------
-# Dataset
-# ------------------------------------------------------------------------------------------------
 
 class FSC_Dataset:
-    def __init__(self, dataset_csv: str, root_dir: str, epoch_dim=1024):
+    def __init__(self, dataset_csv: str, epoch_dim=1024):
+        self.dataset_csv = dataset_csv
+        self.dataset_dir = path.dirname(dataset_csv)
+
         self.df = pd.read_csv(dataset_csv)
-        self.root_dir = root_dir
         self.epoch_dim = epoch_dim
 
         self.fonts = self.df['font'].unique()
@@ -33,7 +36,7 @@ class FSC_Dataset:
 
 
     def _load_sample(self, df_row):
-        img = Image.open(path.join(self.root_dir, df_row['filename']))
+        img = Image.open(path.join(self.dataset_dir, df_row['filename']))
         img = self.augment(img)
         return img
 
@@ -76,11 +79,11 @@ class FSC_Dataset:
 
 def show_dataset_sampling(dataset):
     while True:
-        fig, axs = plt.subplots(1, 2)
+        _, axs = plt.subplots(1, 2)
         
         x1, x2, sf = dataset[0]  # The index isn't relevant
 
-        plt.title("sf: " + str(sf))
+        plt.title("Same font: " + str(sf))
 
         axs[0].imshow(x1.permute(1, 2, 0), cmap='gray', vmin=0, vmax=1.0)
         axs[1].imshow(x2.permute(1, 2, 0), cmap='gray', vmin=0, vmax=1.0)
@@ -89,15 +92,12 @@ def show_dataset_sampling(dataset):
 
 
 # ------------------------------------------------------------------------------------------------
-
-
-FSC_DATASET_DIR = "/work/cvcs_2023_group28/dataset-retriever/font-style-classifier/dataset"
-FSC_DATASET_CSV_PATH = path.join(FSC_DATASET_DIR, "dataset.csv")
+# Main
+# ------------------------------------------------------------------------------------------------
 
 
 if __name__ == "__main__":
-    dataset = FSC_Dataset(FSC_DATASET_CSV_PATH, root_dir=FSC_DATASET_DIR, epoch_dim=0)
+    dataset = FSC_Dataset(FSC_DATASET_CSV, epoch_dim=0)
 
     show_dataset_sampling(dataset)
-
     #show_data_augmentations(dataset)

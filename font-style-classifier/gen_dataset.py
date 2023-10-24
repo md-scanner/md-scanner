@@ -1,12 +1,10 @@
 from PIL import Image, ImageDraw, ImageFont, ImageOps
 import os
 from os import path
+from common import *
 import re
 import csv
-
-
-GOOGLE_FONTS_DIR="fonts"
-FSC_DATASET_DIR="dataset"
+import subprocess
 
 
 FONT_BLACKLIST=[
@@ -22,7 +20,7 @@ class DatasetGenerator:
 
 
     def write_descriptor(self):
-        with open(path.join(FSC_DATASET_DIR, "dataset.csv"), "w") as f:
+        with open(FSC_DATASET_CSV, "w") as f:
             writer = csv.writer(f)
             writer.writerow(["font", "char", "is_italic", "is_bold", 'filename'])
 
@@ -76,7 +74,7 @@ class DatasetGenerator:
         for char in chars:
             try:
                 char_img_filename = f"{font_id}-{char}-{'i' if is_italic else ''}{'b' if is_bold else ''}.png"
-                char_img_path = path.join(FSC_DATASET_DIR, char_img_filename)
+                char_img_path = f"{FSC_DATASET_DIR}/{char_img_filename}"
 
                 if path.exists(char_img_path):
                     print("_", end="")
@@ -118,7 +116,7 @@ class DatasetGenerator:
         style_rgx = re.compile(r'(?:^|\s+)style: \"([^\"]*)\"', re.IGNORECASE)
         weight_rgx = re.compile(r'(?:^|\s+)weight: ([^\s]*)', re.IGNORECASE)
 
-        ofl_fonts_dir = path.join(GOOGLE_FONTS_DIR, "ofl")
+        ofl_fonts_dir = path.join(FSC_GOOGLE_FONTS_DIR, "ofl")
 
         for font_dirname in os.listdir(ofl_fonts_dir):
             if not path.exists(path.join(ofl_fonts_dir, font_dirname, "METADATA.pb")):
@@ -158,6 +156,9 @@ class DatasetGenerator:
 
 
 if __name__ == "__main__":
+    if not path.exists(FSC_GOOGLE_FONTS_DIR):
+        subprocess.run(["git", "clone", "https://github.com/google/fonts", FSC_GOOGLE_FONTS_DIR])
+
     generator = DatasetGenerator()
     generator.generate()
 

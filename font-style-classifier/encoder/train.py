@@ -1,13 +1,17 @@
 import os
 from os import path
+
+import sys
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))  # To import common
+
 import time
 from datetime import datetime
 import torch
 from torch import nn
 from torch.nn import functional as F
 from torch.utils.data import DataLoader
-
 from model import FSC_Encoder
+from common import *
 
 import torchvision
 torchvision.disable_beta_transforms_warning()
@@ -42,17 +46,12 @@ class ContrastiveLoss(nn.Module):
 BATCH_SIZE = 400
 
 # The dimension of an epoch in terms of iterations (i.e. the number of batch to draw from the dataset)
-EPOCH_DIM = 96
+EPOCH_DIM = 1
 
 # After how much time log the training progress
 TRAINING_LOG_DELAY = 5.0
 
-
 # checkpoint-20230831005021.pt
-
-FSC_DATASET_DIR = "/work/cvcs_2023_group28/dataset-retriever/font-style-classifier/dataset"
-FSC_DATASET_CSV_PATH = path.join(FSC_DATASET_DIR, "dataset.csv")
-
 
 class Trainer:
     def __init__(self, model: FSC_Encoder, load_latest_checkpoint=False):
@@ -67,12 +66,11 @@ class Trainer:
             50,
         )
 
-        self.dataset = FSC_Dataset(
-            FSC_DATASET_CSV_PATH,
-            FSC_DATASET_DIR,
-            epoch_dim=EPOCH_DIM * BATCH_SIZE
-            )
-        self.dataset_loader = DataLoader(self.dataset, batch_size=BATCH_SIZE)
+        self.training_set = FSC_Dataset(FSC_TRAINING_SET_CSV, epoch_dim=EPOCH_DIM * BATCH_SIZE)
+        self.training_set_loader = DataLoader(self.training_set, batch_size=BATCH_SIZE)
+
+        self.validation_set = FSC_Dataset(FSC_VALIDATION_SET_CSV, epoch_dim=EPOCH_DIM * BATCH_SIZE)
+        self.validation_set_loader = DataLoader(self.validation_set, batch_size=BATCH_SIZE)
 
         self.iter = 0
         self.epoch = 0
@@ -112,10 +110,10 @@ class Trainer:
         return time.time() - self.started_at
 
 
-    def run_train_one_epoch(self):
+    def _run_train_one_epoch(self):
         self.model.train(True)
 
-        for data in self.dataset_loader:
+        for data in self.training_set_loader:
             x1, x2, sf = data
             x1, x2, sf = x1.cuda(), x2.cuda(), sf.cuda()
 
@@ -148,25 +146,25 @@ class Trainer:
         return self.loss
 
 
-    def run_validation(self):
+    def _run_validation(self):
         self.model.eval()  # self.model.train(False)
 
         with torch.no_grad():
             # Pick a random font
-            font = self.dataset.pick_random_font()
+            font = self.validation_set.pick_random_font()
 
             # The sum of the distances of inputs of the same font.
             # We expect this to decrease over training
             sf_mean_dist = 0.0
 
-            # The sum of the distances of inputs of diffeerent fonts.
+            # The sum of the distances of inputs of different fonts.
             # We expect this to increase over training
             df_mean_dist = 0.0
 
             num_validation_iters = 128
 
             for _ in range(num_validation_iters):
-                x1, x2, _ = self.dataset.pick_same_font_input(font)
+                x1, x2, _ = self.validation_set.pick_same_font_input(font)
                 x1, x2 = x1.cuda(), x2.cuda()  # Move to GPU
  
                 # Insert one dimension for the batch
@@ -179,7 +177,7 @@ class Trainer:
                 sf_mean_dist += d
 
             for _ in range(num_validation_iters):
-                x1, x2, _ = self.dataset.pick_diff_font_input(font)
+                x1, x2, _ = self.validation_set.pick_diff_font_input(font)
                 x1, x2 = x1.cuda(), x2.cuda()  # Move to GPU
  
                 # Insert one dimension for the batch
@@ -197,13 +195,12 @@ class Trainer:
         print(f"VAL - Num iters: {num_validation_iters}, SF sum: {sf_mean_dist:.3f}, DF sum: {df_mean_dist:.3f}", flush=True)
 
 
-    def save_checkpoint(self):
-        checkpoint_dir = path.join(script_dir, ".checkpoints")
+    def _save_checkpoint(self):
         checkpoint_filename = f"checkpoint-{datetime.now().strftime('%Y%m%d%H%M%S')}.pt"
-        checkpoint_file = path.join(checkpoint_dir, checkpoint_filename)
+        checkpoint_file = path.join(FSC_ENCODER_CHECKPOINT_DIR, checkpoint_filename)
 
-        if not path.exists(checkpoint_dir):
-            os.mkdir(checkpoint_dir)
+        if not path.exists(FSC_ENCODER_CHECKPOINT_DIR):
+            os.mkdir(FSC_ENCODER_CHECKPOINT_DIR)
 
         # Save the checkpoint
         torch.save({
@@ -216,13 +213,20 @@ class Trainer:
         }, checkpoint_file)
 
         # Create a link to the latest checkpoint (delete the old one if any)
-        latest_file = path.join(checkpoint_dir, "latest.pt")
-        if path.exists(latest_file):
-            os.remove(latest_file)
-        os.symlink(checkpoint_file, path.abspath(latest_file))
+        if path.exists(FSC_ENCODER_LATEST_CHECKPOINT):
+            os.remove(FSC_ENCODER_LATEST_CHECKPOINT)
+        os.symlink(checkpoint_file, path.abspath(FSC_ENCODER_LATEST_CHECKPOINT))
 
         print(f"CHK - Saved checkpoint: {checkpoint_filename}", flush=True)
 
+
+    def _cleanup_checkpoints(self, keep_first: int):
+        files = [os.path.join(FSC_ENCODER_CHECKPOINT_DIR, f) for f in os.listdir(FSC_ENCODER_CHECKPOINT_DIR)]
+        files.sort(key=lambda x: os.path.getmtime(x), reverse=True)  # Newest files first
+
+        for f in files[keep_first:]:
+            os.remove(f)
+    
 
     def train(self):
         print(f"Running training, batch size: {BATCH_SIZE}...", flush=True)
@@ -232,9 +236,10 @@ class Trainer:
             print(f"EPOCH {self.epoch} (dim: {EPOCH_DIM})", flush=True)
             print(f"-" * 96)
             
-            self.run_train_one_epoch()
-            self.run_validation()
-            self.save_checkpoint()
+            self._run_train_one_epoch()
+            self._run_validation()
+            self._save_checkpoint()
+            self._cleanup_checkpoints(10)
 
             self.epoch += 1
 

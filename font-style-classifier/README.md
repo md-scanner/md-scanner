@@ -13,17 +13,6 @@ git clone https://github.com/google/fonts/ <google-fonts-dir>
 
 Follows a small usage guide describing how to use our scripts. We assume your working directory is `font-style-classifier`.
 
-First of all, you need to set the following environment variables:
-```bash
-export FSC_GOOGLE_FONTS_DIR=         # The path to the Google Fonts directory
-export FSC_ENCODER_MODEL=            # One of: V1Net, SmallNet, TinyNet or VeryTinyNet
-export FSC_ENCODER_CHECKPOINT_PATH=  # The training checkpoint to load
-export FSC_DB_PATH=                  # The path to the qdrant database to generate 
-export FSC_DB_COLLECTION_NAME=       # The name of the database collection to generate
-export FSC_DATASET_CSV_PATH=         # The path to the dataset index .csv file
-export FSC_DATASET_DIR=              # The path to the dataset folder
-```
-
 ### Dataset generator: model/dataset-generator.py
 
 This script is used to generate the dataset on which we train the FSC model and that we use to fill the database for retrieval.

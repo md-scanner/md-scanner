@@ -1,7 +1,10 @@
+import os, sys
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))  # To import common
+
 import torch
 from torch import nn
 from torch.nn import functional as F
-from os import environ as env
+from common import *
 
 
 # References:
@@ -122,11 +125,13 @@ class SmallNet(nn.Module):
         )
 
         self.fc = nn.Sequential(
-            nn.Linear(in_features=4096, out_features=4096),
-            nn.ReLU(),
-            nn.Linear(in_features=4096, out_features=4096),
-            nn.ReLU(),
             nn.Linear(in_features=4096, out_features=1024),
+            nn.ReLU(),
+            nn.Linear(in_features=1024, out_features=1024),
+            nn.ReLU(),
+            nn.Linear(in_features=1024, out_features=1024),
+            nn.ReLU(),
+            nn.Linear(in_features=1024, out_features=128),
         )
 
     
@@ -267,7 +272,7 @@ class VeryTinyNet(nn.Module):
 #FSC_Encoder = SmallNet
 #FSC_Encoder = TinyNet
 #FSC_Encoder = VeryTinyNet
-FSC_Encoder = globals()[env['FSC_ENCODER_MODEL']]
+FSC_Encoder = globals()[FSC_ENCODER_MODEL]
 
 
 if __name__ == "__main__":
