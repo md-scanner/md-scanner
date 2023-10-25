@@ -45,8 +45,8 @@ class ContrastiveLoss(nn.Module):
 # How many items are uploaded to the GPU in parallel
 BATCH_SIZE = 400
 
-# The dimension of an epoch in terms of iterations (i.e. the number of batch to draw from the dataset)
-EPOCH_DIM = 1
+# The dimension of an epoch in terms of iterations (i.e. the number of batches to draw from the dataset)
+EPOCH_DIM = 100
 
 # After how much time log the training progress
 TRAINING_LOG_DELAY = 5.0
