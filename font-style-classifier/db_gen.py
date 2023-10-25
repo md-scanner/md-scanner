@@ -6,24 +6,17 @@ from qdrant_client.models import Distance, VectorParams, PointStruct
 from PIL import Image
 import torchvision.transforms.functional as F
 import pandas as pd
-from model.model import FSC_Encoder
-from os import environ as env
+from common import *
+from encoder.model import model
 import torch
 import sys
 
-
-print("Initializing the DB...")
-db_client = QdrantClient(path=env['FSC_DB_PATH']) 
-
-# Load the model and initialize it to the latest training checkpoint
-print("Loading the model...")
-model = FSC_Encoder()
-model.load_checkpoint(env['FSC_ENCODER_CHECKPOINT_PATH'])
-model = model.cuda()
+print("[DbGen] Initializing the DB...")
+db_client = QdrantClient(path=FSC_DB_PATH) 
 
 # For every dataset sample, run an inference and save the embedding to the DB
-print("Reading dataset index...")
-dataset = pd.read_csv(env['FSC_DATASET_CSV_PATH'])
+print("[DbGen] Reading dataset index...")
+dataset = pd.read_csv(FSC_DATASET_CSV)
 dataset_length = len(dataset)
 
 BATCH_SIZE = 100
@@ -53,7 +46,7 @@ class DbGenerator:
 
     def _upsert_embeddings(self):
         db_client.upsert(
-            collection_name=env['FSC_DB_COLLECTION_NAME'],
+            collection_name=FSC_DB_COLLECTION_NAME,
             points=[
                 PointStruct(
                     id=random.getrandbits(64),
@@ -80,7 +73,7 @@ class DbGenerator:
         # Insert the embeddings into the DB
         st = time.time()
         self._upsert_embeddings()
-        el_count = db_client.count(collection_name=env['FSC_DB_COLLECTION_NAME']).count
+        el_count = db_client.count(collection_name=FSC_DB_COLLECTION_NAME).count
         dt = time.time() - st
 
         print(f"DB insertion: {dt:.3f} (count: {el_count}), ", end="")
@@ -102,7 +95,7 @@ class DbGenerator:
         self.filling_started_at = time.time()
 
         for _, row in self.df.iterrows():
-            img_path = os.path.join(env['FSC_DATASET_DIR'], row["filename"])
+            img_path = os.path.join(FSC_DATASET_DIR, row["filename"])
             img = Image.open(img_path)
             img = F.to_tensor(img)
 
@@ -122,8 +115,8 @@ def main():
 
     # Recreate the collection (IMPORTANT: this will also delete old records!)
     db_client.recreate_collection(
-        collection_name=env['FSC_DB_COLLECTION_NAME'],
-        vectors_config=VectorParams(size=1024, distance=Distance.DOT),
+        collection_name=FSC_DB_COLLECTION_NAME,
+        vectors_config=VectorParams(size=128, distance=Distance.DOT),
         )
     
     db_gen = DbGenerator()

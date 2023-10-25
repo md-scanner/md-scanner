@@ -268,15 +268,29 @@ class VeryTinyNet(nn.Module):
         self.load_state_dict(checkpoint['model_state_dict'])
 
 
+# ------------------------------------------------------------------------------------------------
+
+
 #FSC_Encoder = V1Net
 #FSC_Encoder = SmallNet
 #FSC_Encoder = TinyNet
 #FSC_Encoder = VeryTinyNet
 FSC_Encoder = globals()[FSC_ENCODER_MODEL]
 
+# Initialize a global model instance that can be used by other modules
+print(f"[Model] Initializing the model \"{FSC_ENCODER_MODEL}\"...")
+model = FSC_Encoder()
+
+if os.path.exists(FSC_ENCODER_LATEST_CHECKPOINT):
+    print(f"[Model] Loading latest checkpoint: \"{FSC_ENCODER_LATEST_CHECKPOINT}\"")
+    model.load_checkpoint(FSC_ENCODER_LATEST_CHECKPOINT)
+
+
+# ------------------------------------------------------------------------------------------------
+# Main
+# ------------------------------------------------------------------------------------------------
 
 if __name__ == "__main__":
-    model = FSC_Encoder()
     print(f"Learnable params: CNN: {_count_learnable_params(model.cnn)}, FC: {_count_learnable_params(model.fc)}, Total: {_count_learnable_params(model)}")
 
     print("Inference test:")
