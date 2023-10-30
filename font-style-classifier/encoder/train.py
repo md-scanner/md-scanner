@@ -102,6 +102,7 @@ class Trainer:
         self.iter = checkpoint['iter']
         self.model.load_checkpoint(checkpoint)
         self.optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
+        self.scheduler.load_state_dict(checkpoint['scheduler_state_dict'])
 
         return True
 
@@ -209,6 +210,7 @@ class Trainer:
             'elapsed_time': self._elapsed_time(),
             'model_state_dict': self.model.state_dict(),
             'optimizer_state_dict': self.optimizer.state_dict(),
+            'scheduler_state_dict': self.scheduler.state_dict(),
             'loss': self.last_loss
         }, checkpoint_file)
 
