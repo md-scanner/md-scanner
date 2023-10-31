@@ -2,7 +2,7 @@
 
 MD-Scanner is a Computer Vision Pipeline that generate accurate Markdown files from document images. Notably, it seems to performs better than Meta AI's [Nougat](https://facebookresearch.github.io/nougat/).
 
-![](usvsfb.jpg)
+![](./us_vs_fb.jpg)
 
 ## Repository Contents
 
