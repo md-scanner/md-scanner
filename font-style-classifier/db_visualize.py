@@ -8,8 +8,9 @@ from common import *
 
 print(f"[DbVisualize] Initializing the DB...")
 db_client = QdrantClient(path=FSC_DB_PATH)
+el_count = db_client.count(collection_name=FSC_DB_COLLECTION_NAME).count
 
-print(f"[DbVisualize] DB initialized")
+print(f"[DbVisualize] DB initialized with {el_count} elements")
 
 points_embedding = []
 points_font = []
@@ -39,6 +40,12 @@ while True:  # Iterate over every page of the DB (all points)
 
     points_embedding.extend(x.vector for x in elements)
     points_font.extend(x.payload['font'] for x in elements)
+
+print(points_font)
+
+exit(1)
+
+# TODO out of memory :(
 
 # Project embeddings into the 2D space (preserving the Euclidean distances)
 mds = MDS(random_state=0, normalized_stress='auto')

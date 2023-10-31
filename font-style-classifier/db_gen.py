@@ -22,13 +22,16 @@ complete_fonts = get_complete_fonts()
 
 class DbGenerator:
     def __init__(self):
-        self.db_client = QdrantClient(url=FSC_DB_URL)
+        self.db_client = QdrantClient(path=FSC_DB_PATH)
 
         self.cur_batch = []
         self.cur_batch_id = 0
 
         self.df = dataset[dataset['font'].isin(complete_fonts)]
         self.sample_count = len(self.df)
+
+        self.point_id = 0
+
         print(f"Prepared {len(self.df)}/{len(dataset)} samples...")
 
     def _recreate_collection(self):
@@ -43,7 +46,7 @@ class DbGenerator:
 
     def _upsert_embeddings(self):
         points = []
-        for i, ((_, payload), embedding) in enumerate(zip(self.cur_batch, self.embeddings)):
+        for (_, payload), embedding in zip(self.cur_batch, self.embeddings):
             points.append(PointStruct(
                 id=random.getrandbits(64),
                 vector=embedding.tolist(),
@@ -60,8 +63,6 @@ class DbGenerator:
     def _upsert_batch(self):
         sample_i = (self.cur_batch_id + 1) * BATCH_SIZE
         print(f"{sample_i}/{self.sample_count}, batch: {self.cur_batch_id} - ", end="")
-
-        self._recreate_collection()
 
         # Generate the embeddings for the current batch
         st = time.time()
@@ -86,6 +87,8 @@ class DbGenerator:
         self.cur_batch_id += 1
 
     def regenerate(self):
+        self._recreate_collection()
+
         self.cur_batch = []
         self.cur_batch_id = 0
 

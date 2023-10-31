@@ -3,10 +3,15 @@ from common import *
 from PIL import Image
 import torchvision.transforms.functional as F
 import pandas as pd
+import numpy as np
 
 
 _dataset = None
 _complete_fonts = None
+
+
+def get_dataset_image_path(filename: str):
+    return path.abspath(path.join(FSC_DATASET_DIR, filename))
 
 
 def load_dataset_image(filename: str):
@@ -33,6 +38,30 @@ def get_dataset():
 
 def get_font_count():
     return len(get_dataset()['font'].unique())
+
+
+def filter_dataset(**kwargs):
+    df = get_dataset()
+
+    _filter = np.ones(df.shape[0], dtype=bool)
+
+    if 'font' in kwargs:
+        _filter &= (df['font'] == kwargs['font'])
+
+    if 'font_style' in kwargs:
+        style_filters = [
+            (~df['is_bold'] & ~df['is_italic']),  # Regular
+            (df['is_bold'] & ~df['is_italic']),  # Bold
+            (~df['is_bold'] & df['is_italic']),  # Italic
+        ]
+        _filter &= style_filters[kwargs['font_style']]
+
+    if 'char' in kwargs:
+        _filter &= (df['char'] == kwargs['char'])
+
+    assert not df[_filter].empty
+
+    return df[_filter]
 
 
 def get_complete_fonts():
