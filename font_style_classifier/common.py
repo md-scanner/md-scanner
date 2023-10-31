@@ -53,5 +53,5 @@ def default_device():
     return "cuda" if torch.cuda.is_available() else "cpu"
 
 
-torch.set_default_device(default_device())
-print(f"[common] Setting default pytorch device to: \"{default_device()}\"")
+#torch.set_default_device(default_device())
+#print(f"[common] Setting default pytorch device to: \"{default_device()}\"")

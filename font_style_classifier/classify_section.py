@@ -64,8 +64,8 @@ class HocrToJsonConverter(HTMLParser):
 def _binarize_doc_image(img):
     """ Binarizes the given document image in a way such that the background is white and the text is black. """
 
-    assert img.shape[0] == 1
-    assert img.dtype == torch.float32
+    assert img.shape[0] == 1, f"Unexpected image shape: {img.shape}"
+    assert img.dtype == torch.float32, f"Unexpected image dtype: {img.dtype}"
 
     src_img_shape = img.shape
 
@@ -88,7 +88,6 @@ def _binarize_doc_image(img):
 
     # Convert the cv2 image back to a pytorch Tensor
     out_img = torch.from_numpy(out_img) \
-        .to(device=default_device()) \
         .to(dtype=torch.float32) \
         .mul(1.0 / 255.0) \
         .unsqueeze(0) \
