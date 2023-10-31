@@ -12,6 +12,7 @@ For dataset generation, there a lot of shell scripts (some are Bash-specific, so
 
 Other requirements are:
 
+* **Python 3.7** (compatibility with Torch 1.10.1 + CUDA 11.1, required by detectron2)
 * for the `md-retriever`: Python 3 and some packages (TODO `requirements.txt`).
 * for the `md-renderer`: ImageMagick and:
     1. Pandoc and the themes from [this repository](https://github.com/cab-1729/Pandoc-Themes) and associated fonts for the MD->Latex->PDF->JPG conversion (no BBs generated), using the `gen_pdfs.sh` shell script.

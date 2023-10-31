@@ -4,7 +4,7 @@ IMAGES_DIR='out_images'
 # for the DiT part
 import cv2
 
-from object_detection.ditod import add_vit_config
+from unilm.dit.object_detection.ditod import add_vit_config
 
 import torch
 from time import time
@@ -34,7 +34,7 @@ print("done with imports")
 # Step 1: instantiate config
 cfg = get_cfg()
 add_vit_config(cfg)
-cfg.merge_from_file("./object_detection/publaynet_configs/maskrcnn/maskrcnn_dit_base.yaml")
+cfg.merge_from_file("./unilm/dit/object_detection/publaynet_configs/maskrcnn/maskrcnn_dit_base.yaml")
 
 # Step 2: add model weights URL to config
 cfg.merge_from_list(["MODEL.WEIGHTS","./model_final.pth"])
