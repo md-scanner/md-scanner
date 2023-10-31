@@ -1,6 +1,4 @@
 from PIL import Image, ImageDraw, ImageFont, ImageOps
-import os
-from os import path
 from common import *
 import re
 import csv
@@ -18,7 +16,6 @@ class DatasetGenerator:
         self.num_generated_images = 0
         self.descriptor = {}
 
-
     def write_descriptor(self):
         with open(FSC_DATASET_CSV, "w") as f:
             writer = csv.writer(f)
@@ -32,7 +29,6 @@ class DatasetGenerator:
                     entry['is_bold'],
                     entry['filename']
                 ])
-
 
     def _prepare_char_image(self, font, char):
         _, _, w, h = font.getbbox(char)
@@ -60,7 +56,6 @@ class DatasetGenerator:
 
         return img
 
-
     def generate_characters_for_font_style(self, ttf_file, font_id, is_italic, is_bold):
         chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 
@@ -70,7 +65,7 @@ class DatasetGenerator:
         print(f"{font_id}: ", end="")
 
         font = ImageFont.truetype(ttf_file, size=32)
-        
+
         for char in chars:
             try:
                 char_img_filename = f"{font_id}-{char}-{'i' if is_italic else ''}{'b' if is_bold else ''}.png"
@@ -104,9 +99,8 @@ class DatasetGenerator:
                 'is_bold': is_bold,
                 'filename': char_img_filename,
             }
-        
-        print(f" ({self.num_generated_images} images)")
 
+        print(f" ({self.num_generated_images} images)")
 
     def generate(self):
         self.num_generated_images = 0
@@ -150,14 +144,13 @@ class DatasetGenerator:
                     font_id = font_dirname.replace("-", "_")
                     self.generate_characters_for_font_style(ttf_file, font_id, is_italic, is_bold)
 
-
         print(f"Generated {self.num_generated_images} images, writing .csv descriptor (entries: {len(self.descriptor)})...")
         self.write_descriptor()
 
 
 if __name__ == "__main__":
     if not path.exists(FSC_GOOGLE_FONTS_DIR):
-        subprocess.run(["git", "clone", "https://github.com/google/fonts", FSC_GOOGLE_FONTS_DIR])
+        subprocess.run(["git", "clone", "-b", "v0.3.8-6271-gb266fcd88", "https://github.com/google/fonts", FSC_GOOGLE_FONTS_DIR])
 
     generator = DatasetGenerator()
     generator.generate()

@@ -1,7 +1,7 @@
 from common import *
 from qdrant_client import QdrantClient
 from encoder.model import model
-import torch
+from qdrant_client import models
 
 print(f"[DbRet] Initializing the DB...")
 db_client = QdrantClient(path=FSC_DB_PATH)
@@ -11,13 +11,15 @@ print(f"[DbRet] DB initialized, {el_count} elements")
 
 
 def _retrieve_with_embedding(embedding, count: int):
+    print(f"[retrieve] Retrieving {count} elements...")
     query_results = db_client.search(
         collection_name=FSC_DB_COLLECTION_NAME,
         query_vector=embedding.tolist(),
         with_vectors=True,
-        limit=count
+        limit=count,
+        search_params=models.SearchParams(exact=True)
     )
-    query_results = [  # Mask out QDrant data structures
+    query_results = [  # Mask out qdrant data structures
         {'distance': result.score, 'embedding': result.vector, 'payload': result.payload}
         for result in query_results
     ]
@@ -29,7 +31,7 @@ def retrieve(char_image, num_retrieved_samples: int):
     The results are returned in descent order.
     """
 
-    embedding = model(torch.unsqueeze(char_image, 0))
+    embedding = model(torch.unsqueeze(char_image, dim=0))
     embedding = torch.squeeze(embedding)
     return _retrieve_with_embedding(embedding, num_retrieved_samples)
 

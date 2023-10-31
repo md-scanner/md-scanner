@@ -27,6 +27,7 @@ FSC_ENCODER_CHECKPOINT_DIR = path.join(FSC_DATA_DIR, f"encoder-{FSC_ENCODER_MODE
 FSC_ENCODER_LATEST_CHECKPOINT = path.join(FSC_ENCODER_CHECKPOINT_DIR, "latest.pt")
 
 FSC_DB_PATH = path.join(FSC_DATA_DIR, "db")
+FSC_DB_URL = "http://localhost:6333"
 FSC_DB_COLLECTION_NAME="font-style-classifier"
 
 

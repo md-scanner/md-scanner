@@ -16,6 +16,7 @@ points_font = []
 
 page = None
 largest_id = 0
+
 while True:  # Iterate over every page of the DB (all points)
     # QDrant scroll is described here:
     # # https://stackabuse.com/guide-to-multidimensional-scaling-in-python-with-scikit-learn/
