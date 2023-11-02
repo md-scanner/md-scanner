@@ -37,7 +37,7 @@ class DbGenerator:
     def _recreate_collection(self):
         self.db_client.recreate_collection(
             collection_name=FSC_DB_COLLECTION_NAME,
-            vectors_config=VectorParams(size=128, distance=Distance.EUCLID),
+            vectors_config=VectorParams(size=model.EMBEDDING_DIM, distance=Distance.EUCLID),
         )
 
     def _generate_embeddings(self):

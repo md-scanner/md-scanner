@@ -20,6 +20,9 @@ def _count_learnable_params(model: nn.Module) -> int:
 # ------------------------------------------------------------------------------------------------
 
 class V2Net(nn.Module):
+    EMBEDDING_DIM = 128
+
+
     def __init__(self):
         super(FSC_Encoder, self).__init__()
 
@@ -90,6 +93,8 @@ class V2Net(nn.Module):
 
 
 class V1Net(nn.Module):
+    EMBEDDING_DIM = 1024
+
     def __init__(self):
         super(V1Net, self).__init__()
 
@@ -153,6 +158,8 @@ class V1Net(nn.Module):
 
 
 class SmallNet(nn.Module):
+    EMBEDDING_DIM = 1024
+
     def __init__(self):
         super(FSC_Encoder, self).__init__()
 
@@ -193,28 +200,25 @@ class SmallNet(nn.Module):
         )
 
         self.fc = nn.Sequential(
+            nn.Linear(in_features=4096, out_features=4096),
+            nn.ReLU(),
+            nn.Linear(in_features=4096, out_features=4096),
+            nn.ReLU(),
             nn.Linear(in_features=4096, out_features=1024),
-            nn.ReLU(),
-            nn.Linear(in_features=1024, out_features=1024),
-            nn.ReLU(),
-            nn.Linear(in_features=1024, out_features=1024),
-            nn.ReLU(),
-            nn.Linear(in_features=1024, out_features=128),
         )
 
-    
     def forward(self, x):
         x = self.cnn(x)
         x = torch.flatten(x, start_dim=1)
         x = self.fc(x)
         return x
-    
 
     def load_checkpoint(self, checkpoint):
         if type(checkpoint) == str:
-            checkpoint = torch.load(checkpoint, map_location=torch.device(default_device()))
+            checkpoint = torch.load(checkpoint)
 
         self.load_state_dict(checkpoint['model_state_dict'])
+
 
 # ------------------------------------------------------------------------------------------------
 # Tiny Network
@@ -222,6 +226,8 @@ class SmallNet(nn.Module):
 
 
 class TinyNet(nn.Module):
+    EMBEDDING_DIM = 1024
+
     def __init__(self):
         super(FSC_Encoder, self).__init__()
 
@@ -282,6 +288,8 @@ class TinyNet(nn.Module):
 
 
 class VeryTinyNet(nn.Module):
+    EMBEDDING_DIM = 1024
+
     def __init__(self):
         super(FSC_Encoder, self).__init__()
 

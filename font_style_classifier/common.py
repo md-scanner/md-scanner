@@ -23,11 +23,11 @@ FSC_TEST_SET_CSV = path.join(FSC_DATASET_DIR, "test_set.csv")
 
 FSC_CLASSIFY_DATASET_DIR = path.join(FSC_DATA_DIR, "dataset-classify")
 
-FSC_ENCODER_MODEL = env.get("FSC_ENCODER_MODEL", "V2Net")
+FSC_ENCODER_MODEL = env.get("FSC_ENCODER_MODEL", "SmallNet")
 FSC_ENCODER_CHECKPOINT_DIR = path.join(FSC_DATA_DIR, f"encoder-{FSC_ENCODER_MODEL}-checkpoints")
 FSC_ENCODER_LATEST_CHECKPOINT = path.join(FSC_ENCODER_CHECKPOINT_DIR, "latest.pt")
 
-FSC_DB_PATH = path.join(FSC_DATA_DIR, "db")
+FSC_DB_PATH = path.join(FSC_DATA_DIR, f"db-{FSC_ENCODER_MODEL}")
 FSC_DB_COLLECTION_NAME = "font-style-classifier"
 
 

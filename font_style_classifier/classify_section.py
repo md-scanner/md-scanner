@@ -240,7 +240,7 @@ def _display_doc_vs_bin_doc(doc_img, bin_img):
 
 
 def _display_word_classification(word, style_gt: str, font: str, pred_font_style=None):
-    fig, axs = plt.subplots(4, len(word), squeeze=False)
+    fig, axs = plt.subplots(1 + 3 * 2, len(word), squeeze=False)
 
     word_txt = "".join([x for _, x in word])
 
@@ -260,15 +260,19 @@ def _display_word_classification(word, style_gt: str, font: str, pred_font_style
                 bg_color = 'yellow' if j == pred_font_style else "white"
 
                 style_txt = ["Regular", "Bold", "Italic"][j]
-                axs[j + 1, i].text(0.5, -0.1, style_txt, backgroundcolor=bg_color, c=txt_color, ha="center",
-                                   transform=axs[j + 1, i].transAxes)
+                axs[1 + j * 2, i].text(0.5, -0.1, style_txt, backgroundcolor=bg_color, c=txt_color, ha="center",
+                                   transform=axs[1 + j * 2, i].transAxes)
 
-            char_img_path = filter_dataset(font=font, font_style=j, char=char).iloc[0]['filename']
+            stytled_char_img_path = filter_dataset(font=font, font_style=j, char=char).iloc[0]['filename']
             # print(f"Loading character image at: \"{char_img_path}\"")
 
-            char_img = load_dataset_image(char_img_path)
-            axs[j + 1, i].axis('off')
-            axs[j + 1, i].imshow(torch.squeeze(char_img).cpu(), cmap="gray")
+            styled_char_img = load_dataset_image(stytled_char_img_path)
+            axs[1 + j * 2, i].axis('off')
+            axs[1 + j * 2, i].imshow(torch.squeeze(styled_char_img).cpu(), cmap="gray")
+
+            # Distance image
+            axs[1 + j * 2 + 1, i].axis('off')
+            axs[1 + j * 2 + 1, i].imshow(torch.squeeze(torch.abs(char_img - styled_char_img)).cpu(), cmap="gray")
 
     plt.tight_layout()
     plt.show()
