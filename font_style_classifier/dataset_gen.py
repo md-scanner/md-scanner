@@ -150,7 +150,9 @@ class DatasetGenerator:
 
 if __name__ == "__main__":
     if not path.exists(FSC_GOOGLE_FONTS_DIR):
-        subprocess.run(["git", "clone", "-b", "v0.3.8-6271-gb266fcd88", "https://github.com/google/fonts", FSC_GOOGLE_FONTS_DIR])
+        google_fonts_rev = "v0.3.8-6271-gb266fcd88"
+        subprocess.run(["git", "clone", "https://github.com/google/fonts", FSC_GOOGLE_FONTS_DIR])
+        subprocess.run(["git", "checkout", google_fonts_rev], cwd=FSC_GOOGLE_FONTS_DIR)
 
     generator = DatasetGenerator()
     generator.generate()

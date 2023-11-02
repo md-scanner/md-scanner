@@ -79,7 +79,7 @@ class V2Net(nn.Module):
 
     def load_checkpoint(self, checkpoint):
         if type(checkpoint) == str:
-            checkpoint = torch.load(checkpoint)
+            checkpoint = torch.load(checkpoint, map_location=torch.device(default_device()))
 
         self.load_state_dict(checkpoint['model_state_dict'])
 
@@ -142,7 +142,7 @@ class V1Net(nn.Module):
 
     def load_checkpoint(self, checkpoint):
         if type(checkpoint) == str:
-            checkpoint = torch.load(checkpoint)
+            checkpoint = torch.load(checkpoint, map_location=torch.device(default_device()))
 
         self.load_state_dict(checkpoint['model_state_dict'])
 
@@ -212,7 +212,7 @@ class SmallNet(nn.Module):
 
     def load_checkpoint(self, checkpoint):
         if type(checkpoint) == str:
-            checkpoint = torch.load(checkpoint)
+            checkpoint = torch.load(checkpoint, map_location=torch.device(default_device()))
 
         self.load_state_dict(checkpoint['model_state_dict'])
 
@@ -271,7 +271,7 @@ class TinyNet(nn.Module):
 
     def load_checkpoint(self, checkpoint):
         if type(checkpoint) == str:
-            checkpoint = torch.load(checkpoint)
+            checkpoint = torch.load(checkpoint, map_location=torch.device(default_device()))
 
         self.load_state_dict(checkpoint['model_state_dict'])
 
@@ -331,7 +331,7 @@ class VeryTinyNet(nn.Module):
 
     def load_checkpoint(self, checkpoint):
         if type(checkpoint) == str:
-            checkpoint = torch.load(checkpoint)
+            checkpoint = torch.load(checkpoint, map_location=torch.device(default_device()))
 
         self.load_state_dict(checkpoint['model_state_dict'])
 

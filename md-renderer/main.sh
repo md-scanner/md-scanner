@@ -35,6 +35,9 @@ JEKYLL_PORT=4000
 # Main
 # ------------------------------------------------------------------------------------------------
 
+source $BASE_DIR/.venv/bin/activate
+pip install -r "$BASE_DIR/requirements.txt"
+
 # https://github.com/envygeeks/jekyll-docker/blob/master/README.md
 
 JEKYLL_SITE_DIR=$BASE_DIR/jekyll/_site
@@ -205,3 +208,5 @@ EOM
     docker rm --force $DOCKER_PREFIX-jekyll-server
 done
 
+
+deactivate

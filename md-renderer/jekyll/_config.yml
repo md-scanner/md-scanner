@@ -1,6 +1,6 @@
-theme: jekyll-theme-time-machine
+theme: jekyll-theme-primer
 
-repository: MD-Scanner/jekyll-theme-time-machine
+repository: MD-Scanner/jekyll-theme-primer
 author: Filippo Marinelli, Lorenzo Rutayisire and Carmine Zaccagnino
 
 render_with_liquid: false
