@@ -4,6 +4,35 @@ MD-Scanner is a Computer Vision Pipeline that generate accurate Markdown files f
 
 ![](./us_vs_fb.jpg)
 
+## How to setup (Linux)
+
+From the repository root directory, create a python virtual enviornment and activate it:
+```
+python -m venv .venv
+source ./.venv/bin/activate
+```
+
+Install torch v1.10.1 + CUDA 11.1 ([described here](https://pytorch.org/get-started/previous-versions/#linux-and-windows-15)):
+```
+pip install torch==1.10.1+cu111 torchvision==0.11.2+cu111 torchaudio==0.10.1 -f https://download.pytorch.org/whl/cu111/torch_stable.html
+```
+
+Install detectron2 for torch v1.10 + CUDA 11 ([described here](https://detectron2.readthedocs.io/en/latest/tutorials/install.html)):
+```
+pip install detectron2 -f https://dl.fbaipublicfiles.com/detectron2/wheels/cu111/torch1.10/index.html
+```
+
+Install other python requirements:
+```
+pip install -r requirements.txt
+```
+
+## How to run (Linux)
+
+```
+python pipeline.py <input-image> <output-md>
+```
+
 ## Repository Contents
 
 This repository contains all of the code we wrote for the MarkDown Scanner, except for some Section Classification-specific code. Those things are in [this repository](https://github.com/md-scanner/unilm). There you can also find the [`pipeline.py` file](https://github.com/md-scanner/unilm/blob/master/dit/pipeline.py) running the whole pipeline except the preprocessing step.
